@@ -9,7 +9,21 @@ yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
 xiaosa = sgs.General(extension, "xiaosa", "wei", "3", false)
 lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
 
-
+lualanyan = sgs.CreatePhaseChangeSkill{
+	name = "lualanyan",
+	frequency = sgs.Skill_Compulsory,
+	events = {sgs.EventPhaseStart},
+	
+	on_phasechange = function(skill, player)
+		if player:getPhase() == sgs.Player_Finish then
+            player:setGender(sgs.General_Female)
+        end
+		if player:getPhase() == sgs.Player_Start then
+            player:setGender(sgs.General_Male)
+        end
+        return false
+	end
+}
 
 sgs.LoadTranslationTable{
 	["yun"] = "云包",
@@ -20,6 +34,9 @@ sgs.LoadTranslationTable{
 	["designer:liyunpeng"] = "李云鹏",
 	["cv:liyunpeng"] = "~",
 	["illustrator:liyunpeng"] = "织田信奈",	
+	
+	["lualanyan"] = "蓝颜",
+	[":lualanyan"] = "锁定技，你的回合外，你的性别视为女。",
 	
 	["huaibeibei"] = "怀贝贝",
 	["&huaibeibei"] = "怀贝贝",
@@ -77,5 +94,7 @@ sgs.LoadTranslationTable{
 	["cv:lishuyu"] = "~",
 	["illustrator:lishuyu"] = "东方project 博丽灵梦"
 }
+
+liyunpeng:addSkill(lualanyan)
 
 huaibeibei:addSkill("hongyan")
