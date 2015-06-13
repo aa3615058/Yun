@@ -15,6 +15,6 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](card-progress/yangwenqi.jpg)
 ![image](card-progress/xiaosa.jpg)
 ![image](card-progress/lishuyu.jpg)
-![image](card-progress/liyunpeng.jpg)
+![image](card/liyunpeng.jpg)
 ![image](card-progress/EXhuaibeibei.jpg)
 ![image](card-progress/EXhanjing.jpg)
