@@ -4,7 +4,7 @@ based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now 
 ![image](full/huaibeibei.png) 
 ![image](full/liyunpeng.png) 
 
-# Now progress
+# progress
 ![image](card-progress/huaibeibei.jpg) 
 ![image](card-progress/hanjing.jpg)
 ![image](card-progress/wangcan.jpg)
