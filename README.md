@@ -4,6 +4,8 @@ based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now 
 ![image](full/huaibeibei.png) 
 ![image](full/liyunpeng.png) 
 
+Qsanguosha-v2 https://github.com/Mogara/QSanguosha-v2
+
 # Developing...
 ![image](card-progress/huaibeibei.jpg) 
 ![image](card-progress/hanjing.jpg)
