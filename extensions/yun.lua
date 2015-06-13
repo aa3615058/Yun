@@ -52,7 +52,7 @@ sgs.LoadTranslationTable{
 	["cv:huaibeibei"] = "——",
 	["illustrator:huaibeibei"] = "稗田阿求",
 	["luatiancheng"] = "天成",
-	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若出发了技能“红颜”，你可以摸一张牌。",
+	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若触发了技能“红颜”，你可以摸一张牌。",
 	
 	["hanjing"] = "韩静",
 	["&hanjing"] = "韩静",
