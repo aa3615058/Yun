@@ -1,10 +1,12 @@
 # Yun
-Based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now I am programming, aimed to add these generals into Qsanguosha-v2.
+Based on Qsanguosha-v2.https://github.com/Mogara/QSanguosha-v2
+
+
+I have designed some generals for my lovely XUEMEIs.Now I am programming, aimed to add these generals into Qsanguosha-v2.
 
 ![image](full/huaibeibei.png) 
 ![image](full/liyunpeng.png) 
 
-Qsanguosha-v2 https://github.com/Mogara/QSanguosha-v2
 
 # Developing...
 ![image](card-progress/huaibeibei.jpg) 
