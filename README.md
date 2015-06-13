@@ -9,7 +9,7 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 
 
 # Developing...
-![image](card-progress/huaibeibei.jpg) 
+![image](card/huaibeibei.jpg) 
 ![image](card-progress/hanjing.jpg)
 ![image](card-progress/wangcan.jpg)
 ![image](card-progress/yangwenqi.jpg)
