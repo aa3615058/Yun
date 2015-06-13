@@ -11,14 +11,14 @@ sgs.LoadTranslationTable{
 	["&EXhuaibeibei"] = "怀贝贝",
 	["#EXhuaibeibei"] = "歌姬",
 	["designer:EXhuaibeibei"] = "李云鹏",
-	["cv:EXhuaibeibei"] = "~",
-	["illustrator:EXhuaibeibei"] = "东方project 稗田阿求",
+	["cv:EXhuaibeibei"] = "——",
+	["illustrator:EXhuaibeibei"] = "稗田阿求",
 	
 	["EXhanjing"] = "韩静",
 	["&EXhanjing"] = "韩静",
 	["#EXhanjing"] = "近君情怯",
 	["designer:EXhanjing"] = "李云鹏",
-	["cv:EXhanjing"] = "~",
+	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH"
 }
 
