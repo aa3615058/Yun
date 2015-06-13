@@ -14,16 +14,3 @@ based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now 
 ![image](card-progress/liyunpeng.jpg)
 ![image](card-progress/EXhuaibeibei.jpg)
 ![image](card-progress/EXhanjing.jpg)
-
-# Yun Package
-![image](card/huaibeibei.jpg) 
-![image](card/hanjing.jpg)
-![image](card/wangcan.jpg)
-![image](card/yangwenqi.jpg)
-![image](card/xiaosa.jpg)
-![image](card/lishuyu.jpg)
-
-# YunEX Package
-![image](card/liyunpeng.jpg)
-![image](card/EXhuaibeibei.jpg)
-![image](card/EXhanjing.jpg)
