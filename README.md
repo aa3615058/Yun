@@ -27,10 +27,3 @@ based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now 
 ![image](card/liyunpeng.jpg)
 ![image](card/EXhuaibeibei.jpg)
 ![image](card/EXhanjing.jpg)
-
-# Skins
-![image](card/huaibeibeiskin1.jpg)
-![image](card/huaibeibeiskin2.jpg)
-![image](card/huaibeibeiskin3.jpg)
-![image](card/huaibeibeiskin4.jpg)
-![image](card/wangcanskin1.jpg)
