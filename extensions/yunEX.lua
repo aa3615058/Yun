@@ -5,17 +5,18 @@ liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
 EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 
-lualanyan = sgs.CreatePhaseChangeSkill{
+lualanyan = sgs.CreateTriggerSkill{
 	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
-	events = {sgs.EventPhaseStart},
+	events = {sgs.GameStart, sgs.EventPhaseStart},
 	
-	on_phasechange = function(skill, player)
-		if player:getPhase() == sgs.Player_Finish then
+	on_trigger = function(self, event, player, data)
+		if event == sgs.EventPhaseStart and player:getPhase() == sgs.Player_Finish then
             player:setGender(sgs.General_Female)
-        end
-		if player:getPhase() == sgs.Player_Start then
+		elseif event == sgs.EventPhaseStart and player:getPhase() == sgs.Player_Start then
             player:setGender(sgs.General_Male)
+		elseif event == sgs.GameStart then
+			player:setGender(sgs.General_Female)
         end
         return false
 	end
