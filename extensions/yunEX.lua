@@ -5,9 +5,8 @@ liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
 EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 
-
-lanyan = sgs.CreatePhaseChangeSkill{
-	name = "lanyan",
+lualanyan = sgs.CreatePhaseChangeSkill{
+	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.EventPhaseStart},
 	
@@ -22,10 +21,11 @@ lanyan = sgs.CreatePhaseChangeSkill{
 	end
 }
 
-lienv = sgs.CreateTriggerSkill{
-	name = "lienv",
+lualienv = sgs.CreateTriggerSkill{
+	name = "lualienv",
 	frequency = sgs.Skill_Frequent,
 	events = {sgs.Damage,sgs.Damaged,sgs.FinishJudge},
+	view_as_skill = lualienvViewAs, 
 	
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
@@ -44,29 +44,27 @@ lienv = sgs.CreateTriggerSkill{
 				local card = judge.card
 				if card:isBlack() then
 					player:obtainCard(card)
-				end
 				else
-					
+					return room:askForUseCard(player, "@@lualienv", "@lualienv_prompt")
 				end
-				return true
+				return false
 			end
+		end
 		
 		if flag then
-			if player:askForSkillInvoke("lienv") then
+			if player:askForSkillInvoke("lualienv") then
 				local judge = sgs.JudgeStruct()
 				judge.good = true
-				judge.reason = "lienv"
+				judge.reason = "lualienv"
 				judge.who = player
 				room:judge(judge)
-			else
-				return true
 			end
-			return false
 		end
+		return false
 	end
 }
-lienvCard = sgs.CreateSkillCard{
-	name = "lienvCard",
+lualienvCard = sgs.CreateSkillCard{
+	name = "lualienvCard",
 	target_fixed = false,
 	will_throw = true,
 	filter = function(self, targets, to_select)
@@ -95,6 +93,25 @@ lienvCard = sgs.CreateSkillCard{
 		room:recover(dest, recover)
 	end
 }
+lualienvViewAs = sgs.CreateOneCardViewAsSkill{
+	name = "lualienvViewAs", 
+	
+	view_filter = function(self, selected, to_select)
+		return true
+	end,
+	view_as = function(self, card) 
+		local lnc = lualienvCard:clone()
+		lnc:addSubcard(card)
+		lnc:setSkillName(self:objectName())
+		return lnc
+	end, 
+	enabled_at_play = function(self, player)
+		return player:canDiscard(player, "he")
+	end, 
+	enabled_at_response = function(self, player, pattern)
+		return pattern == "@@lualienv"
+	end
+}
 
 sgs.LoadTranslationTable{
 	["yunEX"] = "云EX包",
@@ -106,11 +123,13 @@ sgs.LoadTranslationTable{
 	["cv:liyunpeng"] = "——",
 	["illustrator:liyunpeng"] = "织田信奈",	
 	
-	["lanyan"] = "蓝颜",
-	[":lanyan"] = "锁定技，你的回合外，你的性别视为女。",
+	["lualanyan"] = "蓝颜",
+	[":lualanyan"] = "锁定技，你的回合外，你的性别视为女。",
 	
-	["lienv"] = "烈女",
-	[":lienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行判定，若结果为黑色，判定牌生效后你获得之；若结果为红色，你可以弃置一张牌并选择一名已受伤的角色，该角色回复一点体力。",
+	["lualienv"] = "烈女",
+	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
+	["@lualienv_prompt"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
+	["~lualienv"] = "\"烈女\"判定结果为红色，你可以弃一张牌令任意一名角色回复一点体力。",
 	
 	["EXhuaibeibei"] = "怀贝贝",
 	["&EXhuaibeibei"] = "怀贝贝",
@@ -127,7 +146,7 @@ sgs.LoadTranslationTable{
 	["illustrator:EXhanjing"] = "DH"
 }
 
-liyunpeng:addSkill(lanyan)
-liyunpeng:addSkill(lienv)
+liyunpeng:addSkill(lualanyan)
+liyunpeng:addSkill(lualienv)
 
 EXhuaibeibei:addSkill("hongyan")

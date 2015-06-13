@@ -8,6 +8,40 @@ yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
 xiaosa = sgs.General(extension, "xiaosa", "wei", "3", false)
 lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
 
+luatiancheng = sgs.CreateTriggerSkill{
+	name = "luatiancheng",
+	frequency = sgs.Skill_Frequent,
+	events = {sgs.CardResponded, sgs.CardUsed, sgs.FinishJudge},
+	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		
+		if event == sgs.CardResponded then
+			local card = data:toCardResponse().m_card
+			if card:getSkillName() == "hongyan" then
+				if player:askForSkillInvoke("luatiancheng") then
+					player:drawCards(1)
+				end
+			end
+		elseif event == sgs.CardUsed then
+			local use = data:toCardUse()
+			if use.card:getSkillName() == "hongyan" then
+				if player:askForSkillInvoke("luatiancheng") then
+					player:drawCards(1)
+				end
+			end
+		elseif event == sgs.FinishJudge then
+			local judge = data:toJudge()
+			local card = judge.card			
+			if card:getSkillName() == "hongyan" then
+				if player:askForSkillInvoke("luatiancheng") then
+					player:drawCards(1)
+				end
+			end
+		end
+		return false
+	end
+}
+
 sgs.LoadTranslationTable{
 	["yun"] = "云包",
 	
@@ -19,8 +53,6 @@ sgs.LoadTranslationTable{
 	["illustrator:huaibeibei"] = "稗田阿求",
 	["luatiancheng"] = "天成",
 	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若出发了技能“红颜”，你可以摸一张牌。",
-	["$luatiancheng1"] = "嗯哼~",
-	["$luatiancheng2"] = "哼哼~",
 	
 	["hanjing"] = "韩静",
 	["&hanjing"] = "韩静",
@@ -68,3 +100,4 @@ sgs.LoadTranslationTable{
 }
 
 huaibeibei:addSkill("hongyan")
+huaibeibei:addSkill(luatiancheng)
