@@ -23,7 +23,7 @@ based on Qsanguosha-v2. I have designed some generals for my lovely XUEMEIs.Now 
 ![image](card/xiaosa.jpg)
 ![image](card/lishuyu.jpg)
 
-# EXYun Package
+# YunEX Package
 ![image](card/liyunpeng.jpg)
 ![image](card/EXhuaibeibei.jpg)
 ![image](card/EXhanjing.jpg)
