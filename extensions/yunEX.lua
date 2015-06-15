@@ -56,7 +56,6 @@ lualienvCard = sgs.CreateSkillCard{
 }
 lualienvVS = sgs.CreateOneCardViewAsSkill{
 	name = "lualienv",
-	
 	view_filter = function(self, selected, to_select)
 		return true
 	end,
@@ -67,7 +66,7 @@ lualienvVS = sgs.CreateOneCardViewAsSkill{
 		return lnc
 	end, 
 	enabled_at_play = function(self, player)
-		return player:canDiscard(player, "he")
+		return false
 	end, 
 	enabled_at_response = function(self, player, pattern)
 		return pattern == "@@lualienv"
@@ -75,7 +74,7 @@ lualienvVS = sgs.CreateOneCardViewAsSkill{
 }
 lualienv = sgs.CreateTriggerSkill{
 	name = "lualienv",
-	frequency = sgs.Skill_Frequent,
+	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.Damage, sgs.Damaged, sgs.FinishJudge},
 	view_as_skill = lualienvVS, 
 	
@@ -112,6 +111,9 @@ lualienv = sgs.CreateTriggerSkill{
 			end
 		end
 		return false
+	end,
+	can_trigger = function(self, target)
+		return target
 	end
 }
 sgs.LoadTranslationTable{
