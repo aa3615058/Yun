@@ -14,7 +14,7 @@ lualanyan = sgs.CreateTriggerSkill{
 		if event == sgs.EventPhaseStart and player:getPhase() == sgs.Player_Finish then
             player:setGender(sgs.General_Female)
 		elseif event == sgs.EventPhaseStart and player:getPhase() == sgs.Player_Start then
-            player:setGender(sgs.General_Male)
+            player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.GameStart then
 			player:setGender(sgs.General_Female)
         end
