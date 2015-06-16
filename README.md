@@ -17,4 +17,4 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](card-progress/lishuyu.jpg)
 ![image](card/liyunpeng.jpg)
 ![image](card-progress/EXhuaibeibei.jpg)
-![image](card-progress/EXhanjing.jpg)
+![image](card/EXhanjing.jpg)
