@@ -6,8 +6,8 @@ sgs.LoadTranslationTable{
 }
 
 liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
-luaLanYan = sgs.CreateTriggerSkill{
-	name = "luaLanYan",
+lualanyan = sgs.CreateTriggerSkill{
+	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart},
 	
@@ -15,16 +15,16 @@ luaLanYan = sgs.CreateTriggerSkill{
 		if event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
-			player:getPhase() == sgs.Player_NotActive then
-				room:notifySkillInvoked(player,self:objectName())
+			if player:getPhase() == sgs.Player_NotActive then
+				--room:broadcastSkillInvoke("lualanyan")
 				player:setGender(sgs.General_Female)
 			end
 		else
 			if player:getPhase() == sgs.Player_Finish then
-				room:notifySkillInvoked(player,self:objectName())
+				-- room:broadcastSkillInvoke(self:objectName())
 				player:setGender(sgs.General_Female)
 			elseif player:getPhase() == sgs.Player_Start then
-				room:notifySkillInvoked(player,self:objectName())
+				-- room:broadcastSkillInvoke(self:objectName())
 				player:setGender(player:getGeneral():getGender())
 			end
 		end
@@ -32,8 +32,8 @@ luaLanYan = sgs.CreateTriggerSkill{
 	end
 }
 
-luaLieNvCard = sgs.CreateSkillCard{
-	name = "luaLieNvCard",
+lualienvCard = sgs.CreateSkillCard{
+	name = "lualienvCard",
 	target_fixed = false,
 	will_throw = true,
 	filter = function(self, targets, to_select)
@@ -62,13 +62,13 @@ luaLieNvCard = sgs.CreateSkillCard{
 		room:recover(dest, recover)
 	end
 }
-luaLieNvVS = sgs.CreateOneCardViewAsSkill{
-	name = "luaLieNv",
+lualienvVS = sgs.CreateOneCardViewAsSkill{
+	name = "lualienv",
 	view_filter = function(self, selected, to_select)
 		return true
 	end,
 	view_as = function(self, card) 
-		local lnc = luaLieNvCard:clone()
+		local lnc = lualienvCard:clone()
 		lnc:addSubcard(card)
 		lnc:setSkillName(self:objectName())
 		return lnc
@@ -77,14 +77,14 @@ luaLieNvVS = sgs.CreateOneCardViewAsSkill{
 		return false
 	end, 
 	enabled_at_response = function(self, player, pattern)
-		return pattern == "@@luaLieNv"
+		return pattern == "@@lualienv"
 	end
 }
-luaLieNv = sgs.CreateTriggerSkill{
-	name = "luaLieNv",
+lualienv = sgs.CreateTriggerSkill{
+	name = "lualienv",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.Damage, sgs.Damaged, sgs.FinishJudge},
-	view_as_skill = luaLieNvVS, 
+	view_as_skill = lualienvVS, 
 	
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
@@ -104,16 +104,16 @@ luaLieNv = sgs.CreateTriggerSkill{
 				if card:isBlack() then
 					player:obtainCard(card)
 				else
-					room:askForUseCard(player, "@@luaLieNv", "@luaLieNv_prompt")
+					room:askForUseCard(player, "@@lualienv", "@lualienv_prompt")
 				end
 				return false
 			end
 		end
 		if flag then
-			if player:askForSkillInvoke("luaLieNv") then
+			if room:askForSkillInvoke(player, "lualienv") then
 				local judge = sgs.JudgeStruct()
 				judge.good = true
-				judge.reason = "luaLieNv"
+				judge.reason = "lualienv"
 				judge.who = player
 				room:judge(judge)
 			end
@@ -124,8 +124,8 @@ luaLieNv = sgs.CreateTriggerSkill{
 		return target
 	end
 }
-liyunpeng:addSkill(luaLanYan)
-liyunpeng:addSkill(luaLieNv)
+liyunpeng:addSkill(lualanyan)
+liyunpeng:addSkill(lualienv)
 sgs.LoadTranslationTable{
 	["liyunpeng"] = "李云鹏",
 	["&liyunpeng"] = "李云鹏",
@@ -134,13 +134,13 @@ sgs.LoadTranslationTable{
 	["cv:liyunpeng"] = "——",
 	["illustrator:liyunpeng"] = "织田信奈",	
 	
-	["luaLanYan"] = "蓝颜",
-	[":luaLanYan"] = "锁定技，你的回合外，你的性别视为女。",
+	["lualanyan"] = "蓝颜",
+	[":lualanyan"] = "锁定技，你的回合外，你的性别视为女。",
 	
-	["luaLieNv"] = "烈女",
-	[":luaLieNv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
-	["@luaLieNv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
-	["~luaLieNv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。"
+	["lualienv"] = "烈女",
+	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
+	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
+	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。"
 }
 
 EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
@@ -157,79 +157,49 @@ EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 luaPingFeng = sgs.CreateTriggerSkill {
 	name = "luaPingFeng",
 	frequency = sgs.Skill_Compulsory,
-	events = {sgs.CardsMoveOneTime, sgs.EventAcquireSkill, sgs.EventLoseSkill},
+	events = {sgs.CardsMoveOneTime, sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.GameStart},
 	
-	on_trigger = function(self, event, player, data) {
+	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
-		if event == sgs.EventLoseSkill and data:toString() == self:objectName() then
+		if event == sgs.GameStart then
+			room:handleAcquireDetachSkills(player, "feiying")
+		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			room:handleAcquireDetachSkills(player,"-feiying|-liuli",true)
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
-			room:notifySkillInvoked(player,self:objectName())
+			-- room:broadcastSkillInvoke(self:objectName())
 			if player:hasEquip() then
-				room:handleAcquireDetachSkills(player,"liuli")
+				room:handleAcquireDetachSkills(player, "liuli")
 			else
-				room:handleAcquireDetachSkills(player,"feiying")
+				room:handleAcquireDetachSkills(player, "feiying")
 			end
 		elseif event == sgs.CardsMoveOneTime and player:isAlive() and player:hasSkill(self:objectName(),true) then
 			local move = data:toMoveOneTime()
 			if move.to and move.to:objectName() == player:objectName() and move.to_place == sgs.Player_PlaceEquip then
 				if player:getEquips():length() == 1 then
-					room:notifySkillInvoked(player,self:objectName())
+					-- room:broadcastSkillInvoke(self:objectName())
 					room:handleAcquireDetachSkills(player,"-feiying|liuli")
 				end
 			elseif move.from and move.from:objectName() == player:objectName() and move.from_places:contains(sgs.Player_PlaceEquip) then
 				if not player:hasEquip() then
-					room:notifySkillInvoked(player,self:objectName())
+					-- room:broadcastSkillInvoke(self:objectName())
 					room:handleAcquireDetachSkills(player,"feiying|-liuli", true)
 				end
 			end
 		end
 		return false
-	}
-}
-
-
-luaDuanYanCard = sgs.CreateSkillCard{
-	name = "luaDuanYanCard", 
-	target_fixed = false, 
-	will_throw = false, 
-	on_effect = function(self, effect)
-		local player = effect.from
-		local target = effect.to
-		local room = player:getRoom()
-		target:obtainCard(self)
-		room:damage(sgs.DamageStruct(self:objectName(), effect.from, effect.to))
-		local x = math.ceil(target:distanceTo(player) / 2)
-		if x > 0 then
-			room:drawCards(target, x, "luaDuanYan")
-		end
 	end
 }
-luaDuanYanVS = sgs.CreateOneCardViewAsSkill{
-	name = "luaDuanYan",
-	filter_pattern = ".|diamond",
-	view_as = function(self, card)
-		local dyc = luaqiaopoCard:clone()
-		dyc:addSubcard(card)
-		dyc:setSkillName(self:objectName())
-		return dyc
-	end, 
-	enabled_at_play = function(self, player)
-		return false
-	end, 
-	enabled_at_response = function(self, player, pattern)
-		return pattern == "@@luaDuanYan"
-	end
-}
+
 luaDuanYan = sgs.CreateTriggerSkill {
 	name = "luaDuanYan",
+	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
 	can_trigger = function(self, target)
 		return target ~= nil
 	end,
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
-		if player:getPhase() ~= sgs.Player_Play then
+		if player:getGender() ~= sgs.General_Male or player:getPhase() ~= sgs.Player_Start then
 			return false
 		end
 		local jingmeizi = room:findPlayerBySkillName(self:objectName())
@@ -237,13 +207,23 @@ luaDuanYan = sgs.CreateTriggerSkill {
 				or jingmeizi:getPhase() == sgs.Player_Play then
 			return false
 		end
-		if room:askForCard(jingmeizi, "@@luaDuanYan", "@DuanYan-prompt", sgs.QVariant(), self:objectName()) then
-			return false
+		if room:askForSkillInvoke(jingmeizi, "luaDuanYan") then
+			local card = room:askForCard(jingmeizi, ".|diamond", "@luaDuanYan-prompt", 
+								sgs.QVariant(), sgs.Card_MethodNone)
+			if card then
+				player:obtainCard(card)
+				room:damage(sgs.DamageStruct(self:objectName(), jingmeizi, player))
+				local x = math.floor(player:distanceTo(jingmeizi) / 2)
+				if x > 0 then
+					room:drawCards(player, x, self:objectName())
+				end
+			end
 		end
 		return false
 	end
 }
 EXhanjing:addSkill(luaPingFeng)
+EXhanjing:addSkill(luaDuanYan)
 sgs.LoadTranslationTable{
 	["EXhanjing"] = "韩静",
 	["&EXhanjing"] = "韩静",
@@ -256,5 +236,6 @@ sgs.LoadTranslationTable{
 	[":luaPingFeng"] = "锁定技，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
 	
 	["luaDuanYan"] = "断雁",
-	[":luaDuanYan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
+	[":luaDuanYan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
+	["@luaDuanYan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
 }
