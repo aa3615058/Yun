@@ -154,14 +154,15 @@ sgs.LoadTranslationTable{
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
 }
 EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
-luaPingFeng = sgs.CreateTriggerSkill {
-	name = "luaPingFeng",
+luapingfeng = sgs.CreateTriggerSkill {
+	name = "luapingfeng",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.CardsMoveOneTime, sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.GameStart},
 	
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
 		if event == sgs.GameStart then
+			--room:notifySkillInvoked(player, self:objectName())
 			room:handleAcquireDetachSkills(player, "feiying")
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			room:handleAcquireDetachSkills(player,"-feiying|-liuli",true)
@@ -190,8 +191,8 @@ luaPingFeng = sgs.CreateTriggerSkill {
 	end
 }
 
-luaDuanYan = sgs.CreateTriggerSkill {
-	name = "luaDuanYan",
+luaduanyan = sgs.CreateTriggerSkill {
+	name = "luaduanyan",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
 	can_trigger = function(self, target)
@@ -207,8 +208,8 @@ luaDuanYan = sgs.CreateTriggerSkill {
 				or jingmeizi:getPhase() == sgs.Player_Play then
 			return false
 		end
-		if room:askForSkillInvoke(jingmeizi, "luaDuanYan") then
-			local card = room:askForCard(jingmeizi, ".|diamond", "@luaDuanYan-prompt", 
+		if room:askForSkillInvoke(jingmeizi, "luaduanyan") then
+			local card = room:askForCard(jingmeizi, ".|diamond", "@luaduanyan-prompt", 
 								sgs.QVariant(), sgs.Card_MethodNone)
 			if card then
 				player:obtainCard(card)
@@ -222,8 +223,8 @@ luaDuanYan = sgs.CreateTriggerSkill {
 		return false
 	end
 }
-EXhanjing:addSkill(luaPingFeng)
-EXhanjing:addSkill(luaDuanYan)
+EXhanjing:addSkill(luapingfeng)
+EXhanjing:addSkill(luaduanyan)
 sgs.LoadTranslationTable{
 	["EXhanjing"] = "韩静",
 	["&EXhanjing"] = "韩静",
@@ -232,10 +233,10 @@ sgs.LoadTranslationTable{
 	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH",
 	
-	["luaPingFeng"] = "凭风",
-	[":luaPingFeng"] = "锁定技，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
+	["luapingfeng"] = "凭风",
+	[":luapingfeng"] = "锁定技，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
 	
-	["luaDuanYan"] = "断雁",
-	[":luaDuanYan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
-	["@luaDuanYan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
+	["luaduanyan"] = "断雁",
+	[":luaduanyan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
+	["@luaduanyan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
 }
