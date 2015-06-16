@@ -187,6 +187,62 @@ luaPingFeng = sgs.CreateTriggerSkill {
 		return false
 	}
 }
+
+
+luaDuanYanCard = sgs.CreateSkillCard{
+	name = "luaDuanYanCard", 
+	target_fixed = false, 
+	will_throw = false, 
+	on_effect = function(self, effect)
+		local player = effect.from
+		local target = effect.to
+		local room = player:getRoom()
+		target:obtainCard(self)
+		room:damage(sgs.DamageStruct(self:objectName(), effect.from, effect.to))
+		local x = math.ceil(target:distanceTo(player) / 2)
+		if x > 0 then
+			room:drawCards(target, x, "luaDuanYan")
+		end
+	end
+}
+luaDuanYanVS = sgs.CreateOneCardViewAsSkill{
+	name = "luaDuanYan",
+	filter_pattern = ".|diamond",
+	view_as = function(self, card)
+		local dyc = luaqiaopoCard:clone()
+		dyc:addSubcard(card)
+		dyc:setSkillName(self:objectName())
+		return dyc
+	end, 
+	enabled_at_play = function(self, player)
+		return false
+	end, 
+	enabled_at_response = function(self, player, pattern)
+		return pattern == "@@luaDuanYan"
+	end
+}
+luaDuanYan = sgs.CreateTriggerSkill {
+	name = "luaDuanYan",
+	events = {sgs.EventPhaseStart},
+	can_trigger = function(self, target)
+		return target ~= nil
+	end,
+	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		if player:getPhase() ~= sgs.Player_Play then
+			return false
+		end
+		local jingmeizi = room:findPlayerBySkillName(self:objectName())
+		if not jingmeizi or not jingmeizi:isAlive() or not jingmeizi:canDiscard(jingmeizi, "he")
+				or jingmeizi:getPhase() == sgs.Player_Play then
+			return false
+		end
+		if room:askForCard(jingmeizi, "@@luaDuanYan", "@DuanYan-prompt", sgs.QVariant(), self:objectName()) then
+			return false
+		end
+		return false
+	end
+}
 EXhanjing:addSkill(luaPingFeng)
 sgs.LoadTranslationTable{
 	["EXhanjing"] = "韩静",
@@ -197,5 +253,8 @@ sgs.LoadTranslationTable{
 	["illustrator:EXhanjing"] = "DH",
 	
 	["luaPingFeng"] = "凭风",
-	[":luaPingFeng"] = "锁定技，你的装备区没有牌时，视为你拥有“飞影”的技能；你的装备区有牌时，视为你拥有“流离”的技能。"
+	[":luaPingFeng"] = "锁定技，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
+	
+	["luaDuanYan"] = "断雁",
+	[":luaDuanYan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
 }
