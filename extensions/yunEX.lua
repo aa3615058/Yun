@@ -1,12 +1,13 @@
 module("extensions.yunEX", package.seeall)
 extension = sgs.Package("yunEX")
 
-liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
-EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
-EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
+sgs.LoadTranslationTable{
+	["yunEX"] = "云EX包"
+}
 
-lualanyan = sgs.CreateTriggerSkill{
-	name = "lualanyan",
+liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
+luaLanYan = sgs.CreateTriggerSkill{
+	name = "luaLanYan",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart},
 	
@@ -31,8 +32,8 @@ lualanyan = sgs.CreateTriggerSkill{
 	end
 }
 
-lualienvCard = sgs.CreateSkillCard{
-	name = "lualienvCard",
+luaLieNvCard = sgs.CreateSkillCard{
+	name = "luaLieNvCard",
 	target_fixed = false,
 	will_throw = true,
 	filter = function(self, targets, to_select)
@@ -61,13 +62,13 @@ lualienvCard = sgs.CreateSkillCard{
 		room:recover(dest, recover)
 	end
 }
-lualienvVS = sgs.CreateOneCardViewAsSkill{
-	name = "lualienv",
+luaLieNvVS = sgs.CreateOneCardViewAsSkill{
+	name = "luaLieNv",
 	view_filter = function(self, selected, to_select)
 		return true
 	end,
 	view_as = function(self, card) 
-		local lnc = lualienvCard:clone()
+		local lnc = luaLieNvCard:clone()
 		lnc:addSubcard(card)
 		lnc:setSkillName(self:objectName())
 		return lnc
@@ -76,14 +77,14 @@ lualienvVS = sgs.CreateOneCardViewAsSkill{
 		return false
 	end, 
 	enabled_at_response = function(self, player, pattern)
-		return pattern == "@@lualienv"
+		return pattern == "@@luaLieNv"
 	end
 }
-lualienv = sgs.CreateTriggerSkill{
-	name = "lualienv",
+luaLieNv = sgs.CreateTriggerSkill{
+	name = "luaLieNv",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.Damage, sgs.Damaged, sgs.FinishJudge},
-	view_as_skill = lualienvVS, 
+	view_as_skill = luaLieNvVS, 
 	
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
@@ -103,16 +104,16 @@ lualienv = sgs.CreateTriggerSkill{
 				if card:isBlack() then
 					player:obtainCard(card)
 				else
-					room:askForUseCard(player, "@@lualienv", "@lualienv_prompt")
+					room:askForUseCard(player, "@@luaLieNv", "@luaLieNv_prompt")
 				end
 				return false
 			end
 		end
 		if flag then
-			if player:askForSkillInvoke("lualienv") then
+			if player:askForSkillInvoke("luaLieNv") then
 				local judge = sgs.JudgeStruct()
 				judge.good = true
-				judge.reason = "lualienv"
+				judge.reason = "luaLieNv"
 				judge.who = player
 				room:judge(judge)
 			end
@@ -123,9 +124,38 @@ lualienv = sgs.CreateTriggerSkill{
 		return target
 	end
 }
+liyunpeng:addSkill(luaLanYan)
+liyunpeng:addSkill(luaLieNv)
+sgs.LoadTranslationTable{
+	["liyunpeng"] = "李云鹏",
+	["&liyunpeng"] = "李云鹏",
+	["#liyunpeng"] = "飞女正传",
+	["designer:liyunpeng"] = "李云鹏",
+	["cv:liyunpeng"] = "——",
+	["illustrator:liyunpeng"] = "织田信奈",	
+	
+	["luaLanYan"] = "蓝颜",
+	[":luaLanYan"] = "锁定技，你的回合外，你的性别视为女。",
+	
+	["luaLieNv"] = "烈女",
+	[":luaLieNv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
+	["@luaLieNv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
+	["~luaLieNv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。"
+}
 
-luapingfeng = sgs.CreateTriggerSkill {
-	name = "luapingfeng",
+EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
+EXhuaibeibei:addSkill("hongyan")
+sgs.LoadTranslationTable{	
+	["EXhuaibeibei"] = "怀贝贝",
+	["&EXhuaibeibei"] = "怀贝贝",
+	["#EXhuaibeibei"] = "歌姬",
+	["designer:EXhuaibeibei"] = "李云鹏",
+	["cv:EXhuaibeibei"] = "——",
+	["illustrator:EXhuaibeibei"] = "稗田阿求"
+}
+EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
+luaPingFeng = sgs.CreateTriggerSkill {
+	name = "luaPingFeng",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.CardsMoveOneTime, sgs.EventAcquireSkill, sgs.EventLoseSkill},
 	
@@ -157,32 +187,8 @@ luapingfeng = sgs.CreateTriggerSkill {
 		return false
 	}
 }
-
+EXhanjing:addSkill(luaPingFeng)
 sgs.LoadTranslationTable{
-	["yunEX"] = "云EX包",
-	
-	["liyunpeng"] = "李云鹏",
-	["&liyunpeng"] = "李云鹏",
-	["#liyunpeng"] = "飞女正传",
-	["designer:liyunpeng"] = "李云鹏",
-	["cv:liyunpeng"] = "——",
-	["illustrator:liyunpeng"] = "织田信奈",	
-	
-	["lualanyan"] = "蓝颜",
-	[":lualanyan"] = "锁定技，你的回合外，你的性别视为女。",
-	
-	["lualienv"] = "烈女",
-	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
-	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
-	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
-	
-	["EXhuaibeibei"] = "怀贝贝",
-	["&EXhuaibeibei"] = "怀贝贝",
-	["#EXhuaibeibei"] = "歌姬",
-	["designer:EXhuaibeibei"] = "李云鹏",
-	["cv:EXhuaibeibei"] = "——",
-	["illustrator:EXhuaibeibei"] = "稗田阿求",
-	
 	["EXhanjing"] = "韩静",
 	["&EXhanjing"] = "韩静",
 	["#EXhanjing"] = "近君情怯",
@@ -190,13 +196,6 @@ sgs.LoadTranslationTable{
 	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH",
 	
-	["luapingfeng"] = "凭风",
-	[":luapingfeng"] = "锁定技，你的装备区没有牌时，视为你拥有“飞影”的技能；你的装备区有牌时，视为你拥有“流离”的技能。"
+	["luaPingFeng"] = "凭风",
+	[":luaPingFeng"] = "锁定技，你的装备区没有牌时，视为你拥有“飞影”的技能；你的装备区有牌时，视为你拥有“流离”的技能。"
 }
-
-liyunpeng:addSkill(lualanyan)
-liyunpeng:addSkill(lualienv)
-
-EXhuaibeibei:addSkill("hongyan")
-
-EXhanjing:addSkill(luapingfeng)
