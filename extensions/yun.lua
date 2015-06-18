@@ -153,11 +153,11 @@ sgs.LoadTranslationTable{
 	["cv:hanjing"] = "——",
 	["illustrator:hanjing"] = "Natsu",
 	["lualianji"] = "连击",
-	[":lualianji"] = "你的回合外，你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后摸一张牌。",
+	[":lualianji"] = "你的回合外，每当你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后你摸一张牌。",
 	["@lualianji-slash"] = "使用一张【杀】。",
 	["~luaqiaopo"] = "选择一张杀 → 对该角色出杀",
 	["luaqiaopo"] = "巧破",
-	[":luaqiaopo"] = "每当你受到1点伤害时，可以交给一名其他角色一张方块牌并将伤害转移之。",
+	[":luaqiaopo"] = "每当你受到1点伤害时，你可以交给一名其他角色一张方块牌并将伤害转移之。",
 	["luaqiaopoCard"] = "巧破",
 	["@luaqiaopo-card"] = "交给一名角色一张方块牌来转移1点伤害。",
 	["~luaqiaopo"] = "受到1点伤害 → 选择一张方块牌 → 选择一名角色 → 该角色承受1点伤害并获得这张牌"}
