@@ -146,6 +146,7 @@ sgs.LoadTranslationTable{
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
 }
+
 EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 luapingfeng = sgs.CreateTriggerSkill {
 	name = "luapingfeng",
@@ -183,7 +184,6 @@ luapingfeng = sgs.CreateTriggerSkill {
 		return false
 	end
 }
-
 luaduanyan = sgs.CreateTriggerSkill {
 	name = "luaduanyan",
 	frequency = sgs.Skill_NotFrequent,
