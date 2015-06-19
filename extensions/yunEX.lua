@@ -119,9 +119,6 @@ lualienv = sgs.CreateTriggerSkill{
 			end
 		end
 		return false
-	end,
-	can_trigger = function(self, target)
-		return target
 	end
 }
 liyunpeng:addSkill(lualanyan)
@@ -196,7 +193,7 @@ luaduanyan = sgs.CreateTriggerSkill {
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
 	can_trigger = function(self, target)
-		return target ~= nil
+		return target
 	end,
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
@@ -208,7 +205,7 @@ luaduanyan = sgs.CreateTriggerSkill {
 				or jingmeizi:getPhase() == sgs.Player_Play then
 			return false
 		end
-		if room:askForSkillInvoke(jingmeizi, "luaduanyan") then
+		if room:askForSkillInvoke(jingmeizi, self:objectName()) then
 			local card = room:askForCard(jingmeizi, ".|diamond", "@luaduanyan-prompt", 
 								sgs.QVariant(), sgs.Card_MethodNone)
 			if card then

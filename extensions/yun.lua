@@ -58,6 +58,9 @@ lualianji = sgs.CreateTriggerSkill{
 	name = "lualianji",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.Damage},
+	can_trigger = function(self, target)
+		return target
+	end,
 	on_trigger = function(self, event, player, data)
 		local victim = data:toDamage().to
 		local room = player:getRoom()
@@ -73,9 +76,6 @@ lualianji = sgs.CreateTriggerSkill{
 				jingmeizi:drawCards(1)
 			end
 		end
-	end,
-	can_trigger = function(self, target)
-		return target
 	end
 }
 luaqiaopoCard = sgs.CreateSkillCard{
@@ -137,9 +137,6 @@ luaqiaopo = sgs.CreateTriggerSkill{
 			data:setValue(damage)
 		end
         return false
-	end, 
-	can_trigger = function(self, target)
-		return target
 	end, 
 	priority = 2
 }
