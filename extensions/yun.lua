@@ -2,7 +2,8 @@ module("extensions.yun", package.seeall)
 extension = sgs.Package("yun")
 
 sgs.LoadTranslationTable{
-["yun"] = "云包"}
+["yun"] = "云包"
+}
 
 huaibeibei = sgs.General(extension, "huaibeibei", "wu", "4", false)
 
@@ -43,15 +44,14 @@ huaibeibei:addSkill("hongyan")
 huaibeibei:addSkill(luatiancheng)
 
 sgs.LoadTranslationTable{
-	["huaibeibei"] = "怀贝贝",
-	["&huaibeibei"] = "怀贝贝",
 	["#huaibeibei"] = "变装小乔",
+	["huaibeibei"] = "怀贝贝",
 	["designer:huaibeibei"] = "李云鹏",
 	["cv:huaibeibei"] = "——",
 	["illustrator:huaibeibei"] = "稗田阿求",
-	
 	["luatiancheng"] = "天成",
-	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若触发了技能“红颜”，你可以摸一张牌。"}
+	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若触发了技能“红颜”，你可以摸一张牌。"
+}
 
 hanjing = sgs.General(extension, "hanjing", "wu", "3", false)
 lualianji = sgs.CreateTriggerSkill{
@@ -71,7 +71,7 @@ lualianji = sgs.CreateTriggerSkill{
 			return false
 		end
 		if jingmeizi:askForSkillInvoke(self:objectName(), data) then
-			local prompt = string.format("@lualianji-slash:%s", victim:objectName())
+			local prompt = string.format("@lualianji-slash", victim:objectName())
 			if room:askForUseSlashTo(jingmeizi, victim, prompt) then
 				jingmeizi:drawCards(1)
 			end
@@ -143,51 +143,47 @@ luaqiaopo = sgs.CreateTriggerSkill{
 hanjing:addSkill(lualianji)
 hanjing:addSkill(luaqiaopo)
 sgs.LoadTranslationTable{
-	["hanjing"] = "韩静",
-	["&hanjing"] = "韩静",
 	["#hanjing"] = "方块杀手",
+	["hanjing"] = "韩静",
 	["designer:hanjing"] = "李云鹏",
 	["cv:hanjing"] = "——",
 	["illustrator:hanjing"] = "Natsu",
 	["lualianji"] = "连击",
 	[":lualianji"] = "你的回合外，每当你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后你摸一张牌。",
-	["@lualianji-slash"] = "使用一张【杀】。",
+	["@lualianji-slash"] = "对 %s 使用一张【杀】。",
 	["~luaqiaopo"] = "选择一张杀 → 对该角色出杀",
 	["luaqiaopo"] = "巧破",
 	[":luaqiaopo"] = "每当你受到1点伤害时，你可以交给一名其他角色一张方块牌并将伤害转移之。",
 	["luaqiaopoCard"] = "巧破",
 	["@luaqiaopo-card"] = "交给一名角色一张方块牌来转移1点伤害。",
-	["~luaqiaopo"] = "受到1点伤害 → 选择一张方块牌 → 选择一名角色 → 该角色承受1点伤害并获得这张牌"}
+	["~luaqiaopo"] = "受到1点伤害 → 选择一张方块牌 → 选择一名角色 → 该角色承受1点伤害并获得这张牌"
+}
 
 wangcan = sgs.General(extension, "wangcan", "wei", "3", false)
 yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
 xiaosa = sgs.General(extension, "xiaosa", "wei", "3", false)
 lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
 sgs.LoadTranslationTable{
-	["wangcan"] = "王灿",
-	["&wangcan"] = "王灿",
 	["#wangcan"] = "星光飞舞",
+	["wangcan"] = "王灿",
 	["designer:wangcan"] = "李云鹏",
 	["cv:wangcan"] = "——",
 	["illustrator:wangcan"] = "爱丽丝·玛格特罗依德",
 	
-	["yangwenqi"] = "杨文琦",
-	["&yangwenqi"] = "杨文琦",
 	["#yangwenqi"] = "佼佼者",
+	["yangwenqi"] = "杨文琦",
 	["designer:yangwenqi"] = "李云鹏",
 	["cv:yangwenqi"] = "——",
 	["illustrator:yangwenqi"] = "红美玲",
 	
-	["xiaosa"] = "肖洒",
-	["&xiaosa"] = "肖洒",
 	["#xiaosa"] = "闪电奇侠",
+	["xiaosa"] = "肖洒",
 	["designer:xiaosa"] = "李云鹏",
 	["cv:xiaosa"] = "——",
 	["illustrator:xiaosa"] = "上白泽慧音",
 	
-	["lishuyu"] = "李淑玉",
-	["&lishuyu"] = "李淑玉",
 	["#lishuyu"] = "咒术师",
+	["lishuyu"] = "李淑玉",
 	["designer:lishuyu"] = "李云鹏",
 	["cv:lishuyu"] = "——",
 	["illustrator:lishuyu"] = "博丽灵梦"

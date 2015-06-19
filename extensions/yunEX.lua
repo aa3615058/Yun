@@ -124,16 +124,13 @@ lualienv = sgs.CreateTriggerSkill{
 liyunpeng:addSkill(lualanyan)
 liyunpeng:addSkill(lualienv)
 sgs.LoadTranslationTable{
-	["liyunpeng"] = "李云鹏",
-	["&liyunpeng"] = "李云鹏",
 	["#liyunpeng"] = "飞女正传",
+	["liyunpeng"] = "李云鹏",
 	["designer:liyunpeng"] = "李云鹏",
 	["cv:liyunpeng"] = "——",
 	["illustrator:liyunpeng"] = "织田信奈",	
-	
 	["lualanyan"] = "蓝颜",
-	[":lualanyan"] = "锁定技，你的回合外，你的性别视为女。",
-	
+	[":lualanyan"] = "<font color=\"blue\"><b>锁定技</b></font>，你的回合外，你的性别视为女。",
 	["lualienv"] = "烈女",
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
 	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
@@ -143,9 +140,8 @@ sgs.LoadTranslationTable{
 EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 EXhuaibeibei:addSkill("hongyan")
 sgs.LoadTranslationTable{	
-	["EXhuaibeibei"] = "怀贝贝",
-	["&EXhuaibeibei"] = "怀贝贝",
 	["#EXhuaibeibei"] = "歌姬",
+	["EXhuaibeibei"] = "怀贝贝",
 	["designer:EXhuaibeibei"] = "李云鹏",
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
@@ -223,16 +219,13 @@ luaduanyan = sgs.CreateTriggerSkill {
 EXhanjing:addSkill(luapingfeng)
 EXhanjing:addSkill(luaduanyan)
 sgs.LoadTranslationTable{
-	["EXhanjing"] = "韩静",
-	["&EXhanjing"] = "韩静",
 	["#EXhanjing"] = "近君情怯",
+	["EXhanjing"] = "韩静",
 	["designer:EXhanjing"] = "李云鹏",
 	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH",
-	
 	["luapingfeng"] = "凭风",
-	[":luapingfeng"] = "锁定技，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
-	
+	[":luapingfeng"] = "<font color=\"blue\"><b>锁定技</b></font>，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
 	["luaduanyan"] = "断雁",
 	[":luaduanyan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
 	["@luaduanyan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
