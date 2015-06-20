@@ -201,28 +201,6 @@ luaxingcanCard = sgs.CreateSkillCard{
 	filter = function(self, targets, to_select)
 		return true
 	end,
-	-- on_effect = function(self, effect)
-		-- local dest = effect.to
-		-- local cancan = effect.from
-		-- local room = dest:getRoom()
-		-- dest:obtainCard(self)
-		-- local result = room:askForChoice(cancan,"luaxingcan","luaxingcan_canuse+luaxingcan_lockhandcard")
-		-- room:drawCards(cancan, 1, "luaxingcan")
-		-- if result == "luaxingcan_canuse" then
-			-- local name = self:objectName()
-			-- local suit_string = self:getSuitString()
-			-- local number_string = self:getNumberString()
-			-- local pattern = string.format(".|%s|%s|hand",suit_string,number_string)
-			-- local msg = sgs.LogMessage() 
-			-- msg.type = "#test"
-            -- msg.card_str = self:toString()
-            -- room:sendLog(msg)
-			-- room:askForUseCard(dest, pattern, "@luaxingcan", -1, sgs.Card_MethodUse)
-		-- elseif result == "luaxingcan_lockhandcard" then
-			-- dest:setMark("luaxingcan",1)
-			-- room:setPlayerCardLimitation(dest, "use,response", ".|.|.|hand", true)
-		-- end
-	-- end
 	on_use = function(self, room, cancan, targets)
 		local dest = targets[1]
 		dest:obtainCard(self)
@@ -232,17 +210,7 @@ luaxingcanCard = sgs.CreateSkillCard{
 		end
 		local result = room:askForChoice(cancan,"luaxingcan","luaxingcan_canuse+luaxingcan_lockhandcard")
 		if result == "luaxingcan_canuse" then
-			-- local msg
-			-- local name = self:objectName()
-			-- local suit_string = self:getSuitString()
-			-- local number_string = self:getNumberString()
-			-- local pattern = string.format(".|%s|%s|hand",suit_string,number_string)
-			-- local msg = sgs.LogMessage() 
-			-- msg.type = "#test"
-            -- msg.card_str = self:toString()
-            -- room:sendLog(msg)
 			local pattern = ".|.|.|&wireUse"
-			--room:moveCardTo(self, dest, sgs.Player_PlaceSpecial,true)
 			dest:addToPile("&wireUse", self, false)
 			if room:askForUseCard(dest, pattern, "@luaxingcan", -1, sgs.Card_MethodUse) then
 			else
@@ -335,23 +303,106 @@ sgs.LoadTranslationTable{
 	[":luaxingcan"] = "出牌阶段， 你可以将一张“丝”交给一名角色，然后你摸一张牌。若这名角色不是你，你选择一项：该角色可以立即使用这张牌；或除处于濒死状态时，该角色不能使用或打出手牌直至回合结束。",
 	["luaxingcan_canuse"] = "该角色可以立即使用这张牌",
 	["luaxingcan_lockhandcard"] = "除处于濒死状态时，该角色不能使用或打出手牌直至回合结束",
-	["#test"] = "%card_str!!!!!!"
+	["#test"] = "%arg!!!!!!"
 }
-yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
-xiaosa = sgs.General(extension, "xiaosa", "wei", "3", false)
-lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
-sgs.LoadTranslationTable{	
-	["#yangwenqi"] = "佼佼者",
-	["yangwenqi"] = "杨文琦",
-	["designer:yangwenqi"] = "李云鹏",
-	["cv:yangwenqi"] = "——",
-	["illustrator:yangwenqi"] = "红美玲",
-	
+xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
+luaxiaohanVS = sgs.CreateOneCardViewAsSkill{
+	name = "luaxiaohan",
+	filter_pattern = "%slash",
+	enabled_at_play = function(self, player)
+		return sgs.Slash_IsAvailable(player)
+	end,
+	enabled_at_response = function(self, player, pattern)
+		return sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE and pattern == "slash"
+	end,
+	view_as = function(self, card)
+		local acard = sgs.Sanguosha:cloneCard("thunder_slash", card:getSuit(), card:getNumber())
+		acard:addSubcard(card)
+		acard:setSkillName(self:objectName())
+		return acard
+	end
+}
+luaxiaohan = sgs.CreateTriggerSkill{
+	name = "luaxiaohan",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.DamageCaused},
+	view_as_skill = luaxiaohanVS,
+	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		local msg = sgs.LogMessage()
+		local damage = data:toDamage()
+		if damage.nature == sgs.DamageStruct_Thunder and not damage.to:isNude() then
+			local msg = sgs.LogMessage()
+			if room:askForSkillInvoke(player, self:objectName()) then
+				room:setEmotion(player, "weapon/ice_sword")
+				if player:canDiscard(damage.to, "he") then
+					local card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false,sgs.Card_MethodDiscard)
+					room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
+					if player:isAlive() and damage.to:isAlive() and player:canDiscard(damage.to, "he") then
+						card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false, sgs.Card_MethodDiscard)
+						room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
+					end
+				end
+				return true
+			end
+		end
+		return false
+	end
+}
+luaxiaohancompulsory = sgs.CreateTriggerSkill{
+	name = "#luaxiaohancompulsory",
+	frequency = sgs.Skill_Compulsory,
+	events = {sgs.DamageForseen},
+	can_trigger = function(self, target)
+		return target
+	end,
+	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		local damage = data:toDamage()
+		local card = damage.card
+		if card then
+			if card:isKindOf("Lightning") then
+				local source = room:findPlayerBySkillName(self:objectName())
+				if source:isAlive() then
+					local msg = sgs.LogMessage()
+					msg.type = "#InvokeSkill"
+					msg.from = source
+					msg.arg = self:objectName()
+					room:sendLog(msg)
+					damage.from = source
+				else
+					damage.from = nil
+				end
+				data:setValue(damage)
+			end
+		end
+		return false
+	end
+}
+xiaosa:addSkill(luaxiaohan)
+xiaosa:addSkill(luaxiaohancompulsory)
+extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
+sgs.LoadTranslationTable{
 	["#xiaosa"] = "闪电奇侠",
 	["xiaosa"] = "肖洒",
 	["designer:xiaosa"] = "李云鹏",
 	["cv:xiaosa"] = "——",
 	["illustrator:xiaosa"] = "上白泽慧音",
+	["luaxiaohan"] = "潇寒",
+	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
+	["#luaxiaohancompulsory"] = "潇寒",
+	["luamiyu"] = "秘雨",
+	[":luamiyu"] = "结束阶段，若你已受伤，你可以选择 X 名其他角色，视为这些角色各判定一次【闪电】。X 为你已损失体力值的一半（向上取整）。"
+	
+}
+-- yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
+-- lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
+sgs.LoadTranslationTable{
+	["#yangwenqi"] = "佼佼者",
+	["yangwenqi"] = "杨文琦",
+	["designer:yangwenqi"] = "李云鹏",
+	["cv:yangwenqi"] = "——",
+	["illustrator:yangwenqi"] = "红美玲",
 	
 	["#lishuyu"] = "咒术师",
 	["lishuyu"] = "李淑玉",

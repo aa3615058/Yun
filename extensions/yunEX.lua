@@ -16,15 +16,12 @@ lualanyan = sgs.CreateTriggerSkill{
 			player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
 			if player:getPhase() == sgs.Player_NotActive then
-				--room:broadcastSkillInvoke("lualanyan")
 				player:setGender(sgs.General_Female)
 			end
 		else
 			if player:getPhase() == sgs.Player_Finish then
-				-- room:broadcastSkillInvoke(self:objectName())
 				player:setGender(sgs.General_Female)
 			elseif player:getPhase() == sgs.Player_Start then
-				-- room:broadcastSkillInvoke(self:objectName())
 				player:setGender(player:getGeneral():getGender())
 			end
 		end
@@ -137,8 +134,8 @@ sgs.LoadTranslationTable{
 	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。"
 }
 
-EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
-EXhuaibeibei:addSkill("hongyan")
+-- EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
+-- EXhuaibeibei:addSkill("hongyan")
 sgs.LoadTranslationTable{	
 	["#EXhuaibeibei"] = "歌姬",
 	["EXhuaibeibei"] = "怀贝贝",
@@ -156,12 +153,10 @@ luapingfeng = sgs.CreateTriggerSkill {
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
 		if event == sgs.GameStart then
-			--room:notifySkillInvoked(player, self:objectName())
 			room:handleAcquireDetachSkills(player, "feiying")
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			room:handleAcquireDetachSkills(player,"-feiying|-liuli",true)
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
-			-- room:broadcastSkillInvoke(self:objectName())
 			if player:hasEquip() then
 				room:handleAcquireDetachSkills(player, "liuli")
 			else
@@ -171,12 +166,10 @@ luapingfeng = sgs.CreateTriggerSkill {
 			local move = data:toMoveOneTime()
 			if move.to and move.to:objectName() == player:objectName() and move.to_place == sgs.Player_PlaceEquip then
 				if player:getEquips():length() == 1 then
-					-- room:broadcastSkillInvoke(self:objectName())
 					room:handleAcquireDetachSkills(player,"-feiying|liuli")
 				end
 			elseif move.from and move.from:objectName() == player:objectName() and move.from_places:contains(sgs.Player_PlaceEquip) then
 				if not player:hasEquip() then
-					-- room:broadcastSkillInvoke(self:objectName())
 					room:handleAcquireDetachSkills(player,"feiying|-liuli", true)
 				end
 			end
