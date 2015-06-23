@@ -330,10 +330,6 @@ luaxiaohan = sgs.CreateTriggerSkill{
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
 		local damage = data:toDamage()
-		local msg = sgs.LogMessage()
-		msg.type = "#test"
-		msg.arg = "DamageCaused!"
-		room:sendLog(msg)
 		if damage.nature == sgs.DamageStruct_Thunder and not damage.to:isNude() then
 			if room:askForSkillInvoke(player, self:objectName()) then
 				room:setEmotion(player, "weapon/ice_sword")
@@ -362,10 +358,6 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 		local room = player:getRoom()
 		local damage = data:toDamage()
 		local card = damage.card
-		local msg = sgs.LogMessage()
-		msg.type = "#test"
-		msg.arg = "DamageForseen!"
-		room:sendLog(msg)
 		if card then
 			if card:isKindOf("Lightning") then
 				local source = room:findPlayerBySkillName(self:objectName())
@@ -380,14 +372,7 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 					damage.from = nil
 				end
 				data:setValue(damage)
-				msg.type = "#test"
-				msg.arg = "ReadyTrigger!"
-				room:sendLog(msg)
-				room:getThread():trigger(sgs.DamageCaused, room, source, data)
-				msg.type = "#test"
-				msg.arg = "TriggerOK!"
-				room:sendLog(msg)
-				return true
+				return room:getThread():trigger(sgs.DamageCaused, room, source, data)
 			end
 		end
 		return false
@@ -407,7 +392,6 @@ sgs.LoadTranslationTable{
 	["#luaxiaohancompulsory"] = "潇寒",
 	["luamiyu"] = "秘雨",
 	[":luamiyu"] = "结束阶段，若你已受伤，你可以选择 X 名其他角色，视为这些角色各判定一次【闪电】。X 为你已损失体力值的一半（向上取整）。"
-	
 }
 -- yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
 -- lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
