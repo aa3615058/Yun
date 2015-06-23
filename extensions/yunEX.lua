@@ -9,10 +9,12 @@ liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
 lualanyan = sgs.CreateTriggerSkill{
 	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
-	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart},
+	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart,sgs.GameStart},
 	
 	on_trigger = function(self, event, player, data)
-		if event == sgs.EventLoseSkill and data:toString() == self:objectName() then
+		if event == sgs.GameStart then
+			player:setGender(sgs.General_Female)
+		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
 			if player:getPhase() == sgs.Player_NotActive then
