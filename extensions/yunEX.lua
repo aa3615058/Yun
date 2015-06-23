@@ -7,29 +7,64 @@ sgs.LoadTranslationTable{
 
 liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
 liyunpeng_female = sgs.General(extension, "liyunpeng_female", "wu", "3", false, true)
+-- function notifyLualanyanInvoked(skill_name, player, room)
+	-- local msg = sgs.LogMessage()
+	-- msg.type = "#InvokeSkill"
+	-- msg.from = player
+	-- msg.arg = skill_name
+	-- room:sendLog(msg)
+	-- msg.type = "#lualanyan"
+	-- room:sendLog(msg)
+-- end
+function liyunpengImageChanged(name, player, room)
+	if player:getGeneralName() == name or player:getGeneral2Name() == name then
+		return
+	end
+	if name == "liyunpeng_female" then
+		local msg = sgs.LogMessage()
+		msg.type = "#InvokeSkill"
+		msg.from = player
+		msg.arg = "lualanyan"
+		room:sendLog(msg)
+		msg.type = "#lualanyan"
+		room:sendLog(msg)
+	end
+	if player:getGeneralName() == "liyunpeng" or player:getGeneralName() == "liyunpeng_female" then
+		room:changeHero(player, name, false, false, false, false)
+	end
+	if player:getGeneral2Name() == "liyunpeng" or player:getGeneral2Name() == "liyunpeng_female" then
+		room:changeHero(player, name, false, false, true, false)
+	end
+end
 lualanyan = sgs.CreateTriggerSkill{
 	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
-	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart,sgs.GameStart},
+	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart, sgs.GameStart},
 	
 	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		local skill_name = self:objectName()
 		if event == sgs.GameStart then
 			player:setGender(sgs.General_Female)
+			liyunpengImageChanged("liyunpeng_female", player, room)
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
 			if player:getPhase() == sgs.Player_NotActive then
 				player:setGender(sgs.General_Female)
+				liyunpengImageChanged("liyunpeng_female", player, room)
 			end
 		else
 			if player:getPhase() == sgs.Player_Finish then
 				player:setGender(sgs.General_Female)
+				liyunpengImageChanged("liyunpeng_female", player, room)
 			elseif player:getPhase() == sgs.Player_Start then
 				player:setGender(player:getGeneral():getGender())
+				liyunpengImageChanged("liyunpeng", player, room)
 			end
 		end
         return false
-	end
+	end	
 }
 
 lualienvCard = sgs.CreateSkillCard{
@@ -133,6 +168,7 @@ sgs.LoadTranslationTable{
 	["illustrator:liyunpeng"] = "织田信奈",	
 	["lualanyan"] = "蓝颜",
 	[":lualanyan"] = "<font color=\"blue\"><b>锁定技</b></font>，你的回合外，你的性别视为女。",
+	["#lualanyan"] = "%from 在回合外的性别视为 <font color=\"yellow\"><b>女性</b></font>",
 	["lualienv"] = "烈女",
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
 	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
