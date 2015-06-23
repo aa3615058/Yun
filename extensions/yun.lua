@@ -329,10 +329,12 @@ luaxiaohan = sgs.CreateTriggerSkill{
 	view_as_skill = luaxiaohanVS,
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
-		local msg = sgs.LogMessage()
 		local damage = data:toDamage()
+		local msg = sgs.LogMessage()
+		msg.type = "#test"
+		msg.arg = "DamageCaused!"
+		room:sendLog(msg)
 		if damage.nature == sgs.DamageStruct_Thunder and not damage.to:isNude() then
-			local msg = sgs.LogMessage()
 			if room:askForSkillInvoke(player, self:objectName()) then
 				room:setEmotion(player, "weapon/ice_sword")
 				if player:canDiscard(damage.to, "he") then
@@ -360,6 +362,10 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 		local room = player:getRoom()
 		local damage = data:toDamage()
 		local card = damage.card
+		local msg = sgs.LogMessage()
+		msg.type = "#test"
+		msg.arg = "DamageForseen!"
+		room:sendLog(msg)
 		if card then
 			if card:isKindOf("Lightning") then
 				local source = room:findPlayerBySkillName(self:objectName())
@@ -374,6 +380,14 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 					damage.from = nil
 				end
 				data:setValue(damage)
+				msg.type = "#test"
+				msg.arg = "ReadyTrigger!"
+				room:sendLog(msg)
+				room:getThread():trigger(sgs.DamageCaused, room, source, data)
+				msg.type = "#test"
+				msg.arg = "TriggerOK!"
+				room:sendLog(msg)
+				return true
 			end
 		end
 		return false
