@@ -210,16 +210,14 @@ luaxingcanCard = sgs.CreateSkillCard{
 		end
 		local result = room:askForChoice(cancan,"luaxingcan","luaxingcan_canuse+luaxingcan_lockhandcard")
 		if result == "luaxingcan_canuse" then
-			local pattern = ".|.|.|&wireUse"
-			dest:addToPile("&wireUse", self, false)
-			if room:askForUseCard(dest, pattern, "@luaxingcan", -1, sgs.Card_MethodUse) then
-			else
-				local dummy = sgs.DummyCard(dest:getPile("&wireUse"))
-				room:obtainCard(dest, dummy)
-			end
+			local pattern = string.format("%s|.|.|.",tostring(self:getEffectiveId()))
+			room:askForUseCard(dest, pattern, "@luaxingcan", -1, sgs.Card_MethodUse)
 		elseif result == "luaxingcan_lockhandcard" then
-			dest:setMark("luaxingcan",1)
-			room:setPlayerCardLimitation(dest, "use,response", ".|.|.|hand", true)
+			if dest:getMark("luaxingcan") > 0 then
+			else 
+				dest:setMark("luaxingcan",1)
+				room:setPlayerCardLimitation(dest, "use,response", ".|.|.|hand", true)
+			end
 		end
 	end
 }
@@ -235,11 +233,11 @@ luaxingcanVS = sgs.CreateOneCardViewAsSkill{
 		xcc:addSubcard(card)
 		xcc:setSkillName(self:objectName())
 		return xcc
-	end,
+	end
 }
 luaxingcan = sgs.CreateTriggerSkill{
 	name = "luaxingcan",
-	events = {sgs.EventPhaseChanging, sgs.Death, sgs.EventLoseSkill},
+	events = {sgs.EventPhaseChanging, sgs.Death, sgs.EventLoseSkill, sgs.EnterDying, sgs.QuitDying},
 	view_as_skill = luaxingcanVS,
 	can_trigger = function(self, target)
 		return target
@@ -258,27 +256,18 @@ luaxingcan = sgs.CreateTriggerSkill{
 			end
 		elseif event == sgs.EventLoseSkill then
 			if data:toString() ~= self:objectName() then return false end
+		elseif player:getMark("luaxingcan") > 0 and event == sgs.EnterDying then
+			room:removePlayerCardLimitation(player, "use,response", ".|.|.|hand$1")
+			return false
+		elseif player:getMark("luaxingcan") > 0 and event == sgs.QuitDying then
+			room:setPlayerCardLimitation(player, "use,response", ".|.|.|hand", true)
+			return false
 		end
 		for _, p in sgs.qlist(room:getAllPlayers()) do 
 			if p:getMark(self:objectName()) > 0 then
 				p:removeMark(self:objectName())
-				room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1");
+				room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1")
 			end
-		end
-	end
-}
-luaxingcan_buff = sgs.CreateTriggerSkill{
-	name = "#luaxingcan_buff",
-	events = {sgs.EnterDying, sgs.QuitDying},
-	can_trigger = function(self, target)
-		return target:getMark("luaxingcan") > 0
-	end,
-	on_trigger = function(self, event, player, data)
-		local room = player:getRoom()
-		if event == sgs.EnterDying then
-			room:removePlayerCardLimitation(player, "use,response", ".|.|.|hand$1");
-		else
-			room:setPlayerCardLimitation(player, "use,response", ".|.|.|hand", true)
 		end
 	end
 }
@@ -286,8 +275,6 @@ wangcan:addSkill(luasiwu)
 wangcan:addSkill(luasiwuremove)
 extension:insertRelatedSkills("luasiwu","#luasiwuremove")
 wangcan:addSkill(luaxingcan)
-wangcan:addSkill(luaxingcan_buff)
-extension:insertRelatedSkills("luaxingcan","#luaxingcan_buff")
 sgs.LoadTranslationTable{
 	["#wangcan"] = "星光飞舞",
 	["wangcan"] = "王灿",
@@ -303,6 +290,7 @@ sgs.LoadTranslationTable{
 	[":luaxingcan"] = "出牌阶段， 你可以将一张“丝”交给一名角色，然后你摸一张牌。若这名角色不是你，你选择一项：该角色可以立即使用这张牌；或除处于濒死状态时，该角色不能使用或打出手牌直至回合结束。",
 	["luaxingcan_canuse"] = "该角色可以立即使用这张牌",
 	["luaxingcan_lockhandcard"] = "除处于濒死状态时，该角色不能使用或打出手牌直至回合结束",
+	["@luaxingcan"] = "你可以立即使用获得的“丝”",
 	["#test"] = "%arg!!!!!!"
 }
 xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
@@ -376,6 +364,21 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 			end
 		end
 		return false
+	end
+}
+luamiyu = sgs.CreateTriggerSkill{
+	name = "luamiyu",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.EventPhaseStart},
+	on_trigger = function(self, event, player, data)
+		if player:getPhase() == sgs.Player_Finish then
+			local room = player:getRoom()
+			if room:askForSkillInvoke(player, self:objectName()) then
+				local lightning = sgs.Sanguosha:cloneCard("lightning", sgs.Card_NoSuit, 0)
+				lightning:setSkillName(self:objectName())
+				lightning:deleteLater()
+			end
+		end
 	end
 }
 xiaosa:addSkill(luaxiaohan)
