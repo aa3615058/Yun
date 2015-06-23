@@ -43,7 +43,7 @@ huaibeibei:addSkill(luatiancheng)
 sgs.LoadTranslationTable{
 	["#huaibeibei"] = "知心姐姐",
 	["huaibeibei"] = "怀贝贝",
-	["designer:huaibeibei"] = "李云鹏",
+	["designer:huaibeibei"] = "飞哥",
 	["cv:huaibeibei"] = "——",
 	["illustrator:huaibeibei"] = "稗田阿求",
 	["luatiancheng"] = "天成",
@@ -142,7 +142,7 @@ hanjing:addSkill(luaqiaopo)
 sgs.LoadTranslationTable{
 	["#hanjing"] = "方块杀手",
 	["hanjing"] = "韩静",
-	["designer:hanjing"] = "李云鹏",
+	["designer:hanjing"] = "飞哥",
 	["cv:hanjing"] = "——",
 	["illustrator:hanjing"] = "Natsu",
 	["lualianji"] = "连击",
@@ -278,7 +278,7 @@ wangcan:addSkill(luaxingcan)
 sgs.LoadTranslationTable{
 	["#wangcan"] = "星光飞舞",
 	["wangcan"] = "王灿",
-	["designer:wangcan"] = "李云鹏",
+	["designer:wangcan"] = "飞哥",
 	["cv:wangcan"] = "——",
 	["illustrator:wangcan"] = "爱丽丝·玛格特罗依德",
 	["luasiwu"] = "丝舞",
@@ -385,7 +385,7 @@ extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
 sgs.LoadTranslationTable{
 	["#xiaosa"] = "闪电奇侠",
 	["xiaosa"] = "肖洒",
-	["designer:xiaosa"] = "李云鹏",
+	["designer:xiaosa"] = "飞哥",
 	["cv:xiaosa"] = "——",
 	["illustrator:xiaosa"] = "上白泽慧音",
 	["luaxiaohan"] = "潇寒",
@@ -399,13 +399,13 @@ sgs.LoadTranslationTable{
 sgs.LoadTranslationTable{
 	["#yangwenqi"] = "佼佼者",
 	["yangwenqi"] = "杨文琦",
-	["designer:yangwenqi"] = "李云鹏",
+	["designer:yangwenqi"] = "飞哥",
 	["cv:yangwenqi"] = "——",
 	["illustrator:yangwenqi"] = "红美玲",
 	
 	["#lishuyu"] = "咒术师",
 	["lishuyu"] = "李淑玉",
-	["designer:lishuyu"] = "李云鹏",
+	["designer:lishuyu"] = "飞哥",
 	["cv:lishuyu"] = "——",
 	["illustrator:lishuyu"] = "博丽灵梦"
 }

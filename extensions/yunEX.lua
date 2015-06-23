@@ -6,6 +6,7 @@ sgs.LoadTranslationTable{
 }
 
 liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
+liyunpeng_female = sgs.General(extension, "liyunpeng_female", "wu", "3", false, true)
 lualanyan = sgs.CreateTriggerSkill{
 	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
@@ -122,10 +123,12 @@ lualienv = sgs.CreateTriggerSkill{
 }
 liyunpeng:addSkill(lualanyan)
 liyunpeng:addSkill(lualienv)
+liyunpeng_female:addSkill(lualanyan)
+liyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
 	["#liyunpeng"] = "飞女正传",
 	["liyunpeng"] = "李云鹏",
-	["designer:liyunpeng"] = "李云鹏",
+	["designer:liyunpeng"] = "飞哥",
 	["cv:liyunpeng"] = "——",
 	["illustrator:liyunpeng"] = "织田信奈",	
 	["lualanyan"] = "蓝颜",
@@ -133,7 +136,12 @@ sgs.LoadTranslationTable{
 	["lualienv"] = "烈女",
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
 	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
-	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。"
+	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
+	["#liyunpeng_female"] = "飞女正传",
+	["liyunpeng_female"] = "李云鹏",
+	["designer:liyunpeng_female"] = "飞哥",
+	["cv:liyunpeng_female"] = "——",
+	["illustrator:liyunpeng_female"] = "织田信奈",	
 }
 
 -- EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
@@ -141,7 +149,7 @@ sgs.LoadTranslationTable{
 sgs.LoadTranslationTable{	
 	["#EXhuaibeibei"] = "歌姬",
 	["EXhuaibeibei"] = "怀贝贝",
-	["designer:EXhuaibeibei"] = "李云鹏",
+	["designer:EXhuaibeibei"] = "飞哥",
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
 }
@@ -216,7 +224,7 @@ EXhanjing:addSkill(luaduanyan)
 sgs.LoadTranslationTable{
 	["#EXhanjing"] = "近君情怯",
 	["EXhanjing"] = "韩静",
-	["designer:EXhanjing"] = "李云鹏",
+	["designer:EXhanjing"] = "飞哥",
 	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH",
 	["luapingfeng"] = "凭风",
