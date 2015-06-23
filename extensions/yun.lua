@@ -41,7 +41,7 @@ luatiancheng = sgs.CreateTriggerSkill{
 huaibeibei:addSkill("hongyan")
 huaibeibei:addSkill(luatiancheng)
 sgs.LoadTranslationTable{
-	["#huaibeibei"] = "变装小乔",
+	["#huaibeibei"] = "知心姐姐",
 	["huaibeibei"] = "怀贝贝",
 	["designer:huaibeibei"] = "李云鹏",
 	["cv:huaibeibei"] = "——",
@@ -294,45 +294,43 @@ sgs.LoadTranslationTable{
 	["#test"] = "%arg!!!!!!"
 }
 xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
-luaxiaohanVS = sgs.CreateOneCardViewAsSkill{
-	name = "luaxiaohan",
-	filter_pattern = "%slash",
-	enabled_at_play = function(self, player)
-		return sgs.Slash_IsAvailable(player)
-	end,
-	enabled_at_response = function(self, player, pattern)
-		return sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE and pattern == "slash"
-	end,
-	view_as = function(self, card)
-		local acard = sgs.Sanguosha:cloneCard("thunder_slash", card:getSuit(), card:getNumber())
-		acard:addSubcard(card)
-		acard:setSkillName(self:objectName())
-		return acard
-	end
-}
 luaxiaohan = sgs.CreateTriggerSkill{
 	name = "luaxiaohan",
 	frequency = sgs.Skill_NotFrequent,
-	events = {sgs.DamageCaused},
-	view_as_skill = luaxiaohanVS,
+	events = {sgs.DamageCaused, sgs.PreCardUsed},
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
-		local damage = data:toDamage()
-		if damage.nature == sgs.DamageStruct_Thunder and not damage.to:isNude() then
-			if room:askForSkillInvoke(player, self:objectName()) then
-				room:setEmotion(player, "weapon/ice_sword")
-				if player:canDiscard(damage.to, "he") then
-					local card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false,sgs.Card_MethodDiscard)
-					room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
-					if player:isAlive() and damage.to:isAlive() and player:canDiscard(damage.to, "he") then
-						card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false, sgs.Card_MethodDiscard)
-						room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
-					end
+		if event == sgs.PreCardUsed then
+			local use = data:toCardUse()
+			local card = use.card
+			if card:isKindOf("Slash") then
+				if room:askForSkillInvoke(player, self:objectName()) then
+					local acard = sgs.Sanguosha:cloneCard("thunder_slash", card:getSuit(), card:getNumber())
+					acard:addSubcard(card)
+					acard:setSkillName(self:objectName())
+					use.card = acard
+					data:setValue(use)
+					room:setEmotion(player, "thunder_slash")
+					return false
 				end
-				return true
+			end
+		elseif event == sgs.DamageCaused then
+			local damage = data:toDamage()
+			if damage.nature == sgs.DamageStruct_Thunder and not damage.to:isNude() then
+				if room:askForSkillInvoke(player, self:objectName()) then
+					room:setEmotion(player, "weapon/ice_sword")
+					if player:canDiscard(damage.to, "he") then
+						local card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false,sgs.Card_MethodDiscard)
+						room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
+						if player:isAlive() and damage.to:isAlive() and player:canDiscard(damage.to, "he") then
+							card_id = room:askForCardChosen(player, damage.to, "he", self:objectName(), false, sgs.Card_MethodDiscard)
+							room:throwCard(sgs.Sanguosha:getCard(card_id), damage.to, player)
+						end
+					end
+					return true
+				end
 			end
 		end
-		return false
 	end
 }
 luaxiaohancompulsory = sgs.CreateTriggerSkill{
@@ -376,7 +374,7 @@ luamiyu = sgs.CreateTriggerSkill{
 			if room:askForSkillInvoke(player, self:objectName()) then
 				local lightning = sgs.Sanguosha:cloneCard("lightning", sgs.Card_NoSuit, 0)
 				lightning:setSkillName(self:objectName())
-				lightning:deleteLater()
+				
 			end
 		end
 	end
