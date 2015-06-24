@@ -412,7 +412,7 @@ luamiyu = sgs.CreateTriggerSkill{
 	events = {sgs.EventPhaseStart},
 	view_as_skill = luamiyuVS,
 	can_trigger = function(self, target)
-		return target:isWounded()
+		return target:hasSkill(self:objectName()) and target:isWounded()
 	end,
 	on_trigger = function(self, event, player, data)
 		if player:getPhase() == sgs.Player_Finish then
