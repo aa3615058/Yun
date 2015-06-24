@@ -114,7 +114,6 @@ luaqiaopo = sgs.CreateTriggerSkill{
 		local room = player:getRoom()
 		if player:canDiscard(player, "he") then
 			local damage = data:toDamage()
-			local value = sgs.QVariant()
 			room:setTag("luaqiaopodamage", data)
 			local M = damage.damage
 			local x = 0
@@ -303,15 +302,24 @@ luaxiaohan = sgs.CreateTriggerSkill{
 		if event == sgs.PreCardUsed then
 			local use = data:toCardUse()
 			local card = use.card
-			if card:isKindOf("Slash") then
+			if card:objectName() == "slash" then
 				if room:askForSkillInvoke(player, self:objectName()) then
 					local acard = sgs.Sanguosha:cloneCard("thunder_slash", card:getSuit(), card:getNumber())
 					acard:addSubcard(card)
 					acard:setSkillName(self:objectName())
+					-- 为处理酒杀而特别加入的代码
+					-- 在“将普通杀当火杀/雷杀打出”的技能上，如果想要实现TriggerSkill形式而不是ViewAsSkill形式，
+					-- 按照Qsanguosha-v2-0504的源码，技能代码只能集成在slash的on_use函数中
+					-- 本技能因此还存在未知缺陷
+					local drank = card:hasFlag("drank")
+					if drank then
+						room:setCardFlag(acard, "drank")
+						acard:setTag("drank", sgs.QVariant(1))
+					end
+					
 					use.card = acard
 					data:setValue(use)
 					room:setEmotion(player, "thunder_slash")
-					return false
 				end
 			end
 		elseif event == sgs.DamageCaused then
@@ -367,11 +375,11 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 luamiyuCard = sgs.CreateSkillCard{
 	name = "luamiyuCard",
 	filter = function(self, targets, to_select)
-		return to_select:objectName() ~= sgs.Self:objectName()
+		local x = math.ceil(sgs.Self:getLostHp() / 2)
+		return #targets < x and to_select:objectName() ~= sgs.Self:objectName()
 	end,
 	feasible = function(self, targets)
-		local x = math.ceil(sgs.Self:getLostHp() / 2)
-		return #target > 0 and #target <= x
+		return #targets > 0
 	end,
 	on_effect = function(self, effect)
 		local dest = effect.to
@@ -379,23 +387,11 @@ luamiyuCard = sgs.CreateSkillCard{
 		local lightning = sgs.Sanguosha:cloneCard("Lightning", sgs.Card_NoSuit, 0)
 		lightning:setSkillName(self:objectName())
 		lightning:deleteLater()
-		-- local data = sgs.QVariant()
 		local lightningEffect = sgs.CardEffectStruct()
 		lightningEffect.card = lightning
 		lightningEffect.from = effect.from
 		lightningEffect.to = dest
-        -- data:setValue(lightningEffect)
 		room:cardEffect(lightningEffect)
-		-- room:getThread():trigger(sgs.CardEffected, room, dest, data)
-		-- local judge = sgs.JudgeStruct()
-		-- judge.pattern = ".|spade|2~9"
-		-- judge.good = false
-		-- judge.reason = "Lightning"
-		-- judge.who = dest
-		-- room:judge(judge)
-		-- if not judge:isGood() then
-			-- room:damage(sgs.DamageStruct(lightning, NULL, dest, 3, sgs.DamageStruct_Thunder));
-		-- end
 	end
 }
 luamiyuVS = sgs.CreateZeroCardViewAsSkill{
@@ -415,6 +411,9 @@ luamiyu = sgs.CreateTriggerSkill{
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
 	view_as_skill = luamiyuVS,
+	can_trigger = function(self, target)
+		return target:isWounded()
+	end,
 	on_trigger = function(self, event, player, data)
 		if player:getPhase() == sgs.Player_Finish then
 			local room = player:getRoom()
@@ -438,7 +437,9 @@ sgs.LoadTranslationTable{
 	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
 	["#luaxiaohancompulsory"] = "潇寒",
 	["luamiyu"] = "秘雨",
-	[":luamiyu"] = "结束阶段，若你已受伤，你可以选择 X 名其他角色，视为这些角色各判定一次【闪电】。X 为你已损失体力值的一半（向上取整）。"
+	[":luamiyu"] = "结束阶段，若你已受伤，你可以选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）。",
+	["@luamiyu"] = "请选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）",
+	["~luamiyu"] = "选择目标 → 判定闪电",
 }
 -- yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
 -- lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
