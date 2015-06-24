@@ -364,17 +364,62 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 		return false
 	end
 }
+luamiyuCard = sgs.CreateSkillCard{
+	name = "luamiyuCard",
+	filter = function(self, targets, to_select)
+		return to_select:objectName() ~= sgs.Self:objectName()
+	end,
+	feasible = function(self, targets)
+		local x = math.ceil(sgs.Self:getLostHp() / 2)
+		return #target > 0 and #target <= x
+	end,
+	on_effect = function(self, effect)
+		local dest = effect.to
+		local room = dest:getRoom()
+		local lightning = sgs.Sanguosha:cloneCard("Lightning", sgs.Card_NoSuit, 0)
+		lightning:setSkillName(self:objectName())
+		lightning:deleteLater()
+		-- local data = sgs.QVariant()
+		local lightningEffect = sgs.CardEffectStruct()
+		lightningEffect.card = lightning
+		lightningEffect.from = effect.from
+		lightningEffect.to = dest
+        -- data:setValue(lightningEffect)
+		room:cardEffect(lightningEffect)
+		-- room:getThread():trigger(sgs.CardEffected, room, dest, data)
+		-- local judge = sgs.JudgeStruct()
+		-- judge.pattern = ".|spade|2~9"
+		-- judge.good = false
+		-- judge.reason = "Lightning"
+		-- judge.who = dest
+		-- room:judge(judge)
+		-- if not judge:isGood() then
+			-- room:damage(sgs.DamageStruct(lightning, NULL, dest, 3, sgs.DamageStruct_Thunder));
+		-- end
+	end
+}
+luamiyuVS = sgs.CreateZeroCardViewAsSkill{
+	name = "luamiyu",
+	enabled_at_play = function(self, player)
+		return false
+	end, 
+	enabled_at_response = function(self, player, pattern)
+		return pattern == "@@luamiyu"
+	end,
+	view_as = function()
+		return luamiyuCard:clone()
+	end
+}
 luamiyu = sgs.CreateTriggerSkill{
 	name = "luamiyu",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
+	view_as_skill = luamiyuVS,
 	on_trigger = function(self, event, player, data)
 		if player:getPhase() == sgs.Player_Finish then
 			local room = player:getRoom()
 			if room:askForSkillInvoke(player, self:objectName()) then
-				local lightning = sgs.Sanguosha:cloneCard("lightning", sgs.Card_NoSuit, 0)
-				lightning:setSkillName(self:objectName())
-				
+				room:askForUseCard(player, "@@luamiyu", "@luamiyu")
 			end
 		end
 	end
@@ -382,6 +427,7 @@ luamiyu = sgs.CreateTriggerSkill{
 xiaosa:addSkill(luaxiaohan)
 xiaosa:addSkill(luaxiaohancompulsory)
 extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
+xiaosa:addSkill(luamiyu)
 sgs.LoadTranslationTable{
 	["#xiaosa"] = "闪电奇侠",
 	["xiaosa"] = "肖洒",
