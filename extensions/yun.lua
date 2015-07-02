@@ -234,9 +234,17 @@ luaxingcanVS = sgs.CreateOneCardViewAsSkill{
 		return xcc
 	end
 }
+function removeXingcanMarkAndLimitation(room)
+	for _, p in sgs.qlist(room:getAllPlayers()) do 
+		if p:getMark(self:objectName()) > 0 then
+			p:removeMark(self:objectName())
+			room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1")
+		end
+	end
+end
 luaxingcan = sgs.CreateTriggerSkill{
 	name = "luaxingcan",
-	events = {sgs.EventPhaseChanging, sgs.Death, sgs.EventLoseSkill, sgs.EnterDying, sgs.QuitDying},
+	events = {sgs.EventPhaseChanging, sgs.EventLoseSkill, sgs.EnterDying, sgs.QuitDying},
 	view_as_skill = luaxingcanVS,
 	can_trigger = function(self, target)
 		return target
@@ -245,29 +253,19 @@ luaxingcan = sgs.CreateTriggerSkill{
 		local room = player:getRoom()
 		if event == sgs.EventPhaseChanging then
 			local change = data:toPhaseChange()
-			if change.to ~= sgs.Player_NotActive then
-				return false
-			end
-		elseif event == sgs.Death then
-			local death = data:toDeath()
-			if(death.who:objectName() ~= player:objectName() or player:objectName() ~= room:getCurrent():objectName()) then
-				return false
+			if change.to == sgs.Player_NotActive and player:hasSkill(self:objectName())then
+				removeXingcanMarkAndLimitation(room)
 			end
 		elseif event == sgs.EventLoseSkill then
-			if data:toString() ~= self:objectName() then return false end
+			if data:toString() == self:objectName() then 
+				removeXingcanMarkAndLimitation(room)
+			end
 		elseif player:getMark("luaxingcan") > 0 and event == sgs.EnterDying then
 			room:removePlayerCardLimitation(player, "use,response", ".|.|.|hand$1")
-			return false
 		elseif player:getMark("luaxingcan") > 0 and event == sgs.QuitDying then
 			room:setPlayerCardLimitation(player, "use,response", ".|.|.|hand", true)
-			return false
 		end
-		for _, p in sgs.qlist(room:getAllPlayers()) do 
-			if p:getMark(self:objectName()) > 0 then
-				p:removeMark(self:objectName())
-				room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1")
-			end
-		end
+		return false
 	end
 }
 wangcan:addSkill(luasiwu)
