@@ -236,8 +236,8 @@ luaxingcanVS = sgs.CreateOneCardViewAsSkill{
 }
 function removeXingcanMarkAndLimitation(room)
 	for _, p in sgs.qlist(room:getAllPlayers()) do 
-		if p:getMark(self:objectName()) > 0 then
-			p:removeMark(self:objectName())
+		if p:getMark("luaxingcan") > 0 then
+			p:removeMark("luaxingcan")
 			room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1")
 		end
 	end
