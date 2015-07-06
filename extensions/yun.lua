@@ -209,7 +209,12 @@ luaxingcanCard = sgs.CreateSkillCard{
 		end
 		local result = room:askForChoice(cancan,"luaxingcan","luaxingcan_canuse+luaxingcan_lockhandcard")
 		if result == "luaxingcan_canuse" then
-			local pattern = string.format("%s|.|.|.",tostring(self:getEffectiveId()))
+			local pattern
+			if dest:isWounded() then
+				pattern = string.format("%s+^Nullification+^Jink|.|.|.",tostring(self:getEffectiveId()))
+			else
+				pattern = string.format("%s+^Nullification+^Jink+^Peach|.|.|.",tostring(self:getEffectiveId()))
+			end
 			room:askForUseCard(dest, pattern, "@luaxingcan", -1, sgs.Card_MethodUse)
 		elseif result == "luaxingcan_lockhandcard" then
 			if dest:getMark("luaxingcan") > 0 then
