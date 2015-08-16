@@ -12,27 +12,17 @@ luatiancheng = sgs.CreateTriggerSkill{
 	events = {sgs.CardResponded, sgs.CardUsed, sgs.FinishJudge},
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()		
+		local card
 		if event == sgs.CardResponded then
-			local card = data:toCardResponse().m_card
-			if card:getSkillName() == "hongyan" then
-				if player:askForSkillInvoke("luatiancheng") then
-					player:drawCards(1, self:objectName())
-				end
-			end
+			card = data:toCardResponse().m_card
 		elseif event == sgs.CardUsed then
-			local use = data:toCardUse()
-			if use.card:getSkillName() == "hongyan" then
-				if player:askForSkillInvoke("luatiancheng") then
-					player:drawCards(1, self:objectName())
-				end
-			end
+			card = data:toCardUse().card
 		elseif event == sgs.FinishJudge then
-			local judge = data:toJudge()
-			local card = judge.card			
-			if card:getSkillName() == "hongyan" then
-				if player:askForSkillInvoke("luatiancheng") then
-					player:drawCards(1, self:objectName())
-				end
+			card = data:toJudge().card
+		end
+		if card and card:getSkillName() == "hongyan" then
+			if room:askForSkillInvoke(player,self:objectName()) then
+				player:drawCards(1)
 			end
 		end
 		return false
@@ -364,6 +354,9 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 					msg.from = source
 					msg.arg = self:objectName()
 					room:sendLog(msg)
+					msg.type = "##luaxiaohancompulsory"
+					msg.arg = "lightning"
+					room:sendLog(msg)
 					damage.from = source
 				else
 					damage.from = nil
@@ -439,6 +432,7 @@ sgs.LoadTranslationTable{
 	["luaxiaohan"] = "潇寒",
 	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
 	["#luaxiaohancompulsory"] = "潇寒",
+	["##luaxiaohancompulsory"] = "%from 成为【%arg】的伤害来源",
 	["luamiyu"] = "秘雨",
 	[":luamiyu"] = "结束阶段，若你已受伤，你可以选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）。",
 	["@luamiyu"] = "请选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）",
