@@ -6,7 +6,7 @@ sgs.LoadTranslationTable{
 }
 
 liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
-liyunpeng_female = sgs.General(extension, "liyunpeng_female", "wu", "3", false, true)
+liyunpeng_female = sgs.General(extension, "liyunpeng_female", "wu", "3", false, true, true)
 -- function notifyLualanyanInvoked(skill_name, player, room)
 	-- local msg = sgs.LogMessage()
 	-- msg.type = "#InvokeSkill"
@@ -39,12 +39,23 @@ end
 lualanyan = sgs.CreateTriggerSkill{
 	name = "lualanyan",
 	frequency = sgs.Skill_Compulsory,
-	events = {sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.EventPhaseStart, sgs.GameStart},
+	events = {sgs.EventPhaseStart, sgs.EventPhaseEnd, sgs.EventAcquireSkill, sgs.EventLoseSkill,sgs.GameStart},
 	
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
 		local skill_name = self:objectName()
-		if event == sgs.GameStart then
+		
+		if event == sgs.EventPhaseStart then
+			if player:getPhase() == sgs.Player_Start then
+				player:setGender(player:getGeneral():getGender())
+				liyunpengImageChanged("liyunpeng", player, room)
+			end
+		elseif event == sgs.EventPhaseEnd then
+			if player:getPhase() == sgs.Player_Finish then
+				player:setGender(sgs.General_Female)
+				liyunpengImageChanged("liyunpeng_female", player, room)
+			end
+		elseif event == sgs.GameStart then
 			player:setGender(sgs.General_Female)
 			liyunpengImageChanged("liyunpeng_female", player, room)
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
@@ -53,14 +64,6 @@ lualanyan = sgs.CreateTriggerSkill{
 			if player:getPhase() == sgs.Player_NotActive then
 				player:setGender(sgs.General_Female)
 				liyunpengImageChanged("liyunpeng_female", player, room)
-			end
-		else
-			if player:getPhase() == sgs.Player_Finish then
-				player:setGender(sgs.General_Female)
-				liyunpengImageChanged("liyunpeng_female", player, room)
-			elseif player:getPhase() == sgs.Player_Start then
-				player:setGender(player:getGeneral():getGender())
-				liyunpengImageChanged("liyunpeng", player, room)
 			end
 		end
         return false
@@ -139,7 +142,9 @@ lualienv = sgs.CreateTriggerSkill{
 				if card:isBlack() then
 					player:obtainCard(card)
 				else
-					room:askForUseCard(player, "@@lualienv", "@lualienv_prompt")
+					if not player:isNude() then
+						room:askForUseCard(player, "@@lualienv", "@lualienv_prompt")
+					end
 				end
 				return false
 			end
@@ -190,7 +195,7 @@ sgs.LoadTranslationTable{
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
 }
 
-EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
+EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false, true)
 luapingfeng = sgs.CreateTriggerSkill {
 	name = "luapingfeng",
 	frequency = sgs.Skill_Compulsory,
@@ -255,8 +260,8 @@ luaduanyan = sgs.CreateTriggerSkill {
 		return false
 	end
 }
-EXhanjing:addSkill(luapingfeng)
 EXhanjing:addSkill(luaduanyan)
+EXhanjing:addSkill(luapingfeng)
 sgs.LoadTranslationTable{
 	["#EXhanjing"] = "近君情怯",
 	["EXhanjing"] = "韩静",
