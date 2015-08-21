@@ -166,7 +166,7 @@ liyunpeng_female:addSkill(lualanyan)
 liyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
 	["#liyunpeng"] = "飞女正传",
-	["liyunpeng"] = "李云鹏",
+	["liyunpeng"] = "EX李云鹏",
 	["designer:liyunpeng"] = "飞哥",
 	["cv:liyunpeng"] = "——",
 	["illustrator:liyunpeng"] = "织田信奈",	
@@ -194,8 +194,182 @@ sgs.LoadTranslationTable{
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求"
 }
-
-EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false, true)
+EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
+luayigeCard = sgs.CreateSkillCard{
+	name = "luayigeCard",
+	filter = function(self, targets, to_select)
+		return #targets == 0 and to_select:isFemale() and to_select:objectName() ~= sgs.Self:objectName()
+	end,
+	feasible = function(self, targets)
+		return #targets > 0
+	end,
+	on_effect = function(self, effect)
+		local beibi = effect.from
+		local general = effect.to
+		local room = beibi:getRoom()
+		
+		local skill_names = {}
+		local skill_name
+		
+		for _,skill in sgs.qlist(general:getVisibleSkillList())do
+			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake then
+				continue
+			end
+			if not table.contains(skill_names,skill:objectName()) then
+				table.insert(skill_names,skill:objectName())
+			end
+		end
+		table.insert(skill_names,"cancel")
+		if #skill_names > 0 then
+			skill_name = room:askForChoice(beibi, "luayige",table.concat(skill_names,"+"))
+		end		
+		if skill_name ~= "cancel" then
+			beibi:setTag("luayige_skill",sgs.QVariant(skill_name))
+			room:handleAcquireDetachSkills(beibi, skill_name, true)
+			if not general:hasSkill("hongyan") then
+				local give_hongyan = room:askForChoice(beibi, "@give_hongyan", "yes+no")
+				if give_hongyan == "yes" then
+					room:handleAcquireDetachSkills(general, "hongyan", true)
+					general:setMark("luayige",1)
+				end
+			end
+		end
+	end
+}
+luayigeVS = sgs.CreateZeroCardViewAsSkill{
+	name = "luayige",
+	enabled_at_play = function(self, player)
+		return false
+	end, 
+	enabled_at_response = function(self, player, pattern)
+		return pattern == "@@luayige"
+	end,
+	view_as = function()
+		return luayigeCard:clone()
+	end
+}
+luayige = sgs.CreateTriggerSkill{
+	name = "luayige",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.EventPhaseStart, sgs.GameStart},
+	view_as_skill = luayigeVS,
+	on_trigger = function(self, event, beibi, data)
+		local room = beibi:getRoom()
+		if event == sgs.EventPhaseStart then
+			if beibi:getPhase() == sgs.Player_Start then
+				if room:askForSkillInvoke(beibi, self:objectName()) then
+					local yige_skill = beibi:getTag("luayige_skill"):toString()
+					if yige_skill ~= "" then
+						room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
+						room:detachSkillFromPlayer(beibi, yige_skill, false, true)
+					end
+					beibi:removeTag("luayige_skill")
+					for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
+						if p:getMark("luayige") > 0 then
+							p:removeMark("luayige")
+							if p:hasSkill("hongyan") then
+								room:detachSkillFromPlayer(p, "hongyan", false, true)
+							end
+							break
+						end
+					end
+					room:askForUseCard(beibi, "@@luayige", "@luayige")
+				end
+			end
+		elseif event == sgs.GameStart then
+			local existFemale = false
+			for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
+				if p:isFemale() then
+					existFemale = true
+					break
+				end
+			end
+			if not existFemale then
+				--local convert = room:askForChoice(beibi, "@convert", "@@convert+cancel")
+				local general = room:askForGeneral(beibi, "huaibeibei+EXhuaibeibei", "EXhuaibeibei")
+				--if convert == "@@convert" then
+					-- if beibi:getGeneralName() == "EXhuaibeibei" then
+						-- room:changeHero(beibi, "huaibeibei", false, false, false, true)
+					-- elseif beibi:getGeneral2Name() == "EXhuaibeibei" then
+						-- room:changeHero(beibi, "huaibeibei", false, false, true, true)
+					-- end
+				-- end
+				if general == "huaibeibei" then
+					if beibi:getGeneralName() == "EXhuaibeibei" then
+						room:changeHero(beibi, "huaibeibei", false, false, false, true)
+					elseif beibi:getGeneral2Name() == "EXhuaibeibei" then
+						room:changeHero(beibi, "huaibeibei", false, false, true, true)
+					end
+				end
+			end
+		end
+	end
+}
+luajianmei = sgs.CreateTriggerSkill{
+	name = "luajianmei$",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.CardResponded, sgs.CardUsed, sgs.FinishJudge},
+	on_trigger = function(self, event, player, data)
+		local room = player:getRoom()
+		local card
+		if event == sgs.CardResponded then
+			card = data:toCardResponse().m_card
+		elseif event == sgs.CardUsed then
+			card = data:toCardUse().card
+		elseif event == sgs.FinishJudge then
+			card = data:toJudge().card
+		end
+		if card and card:getSkillName() == "hongyan" then
+			local beibis = sgs.SPlayerList()
+			for _, p in sgs.qlist(room:getOtherPlayers(player)) do
+				if p:hasLordSkill(self:objectName()) then
+					beibis:append(p)
+				end
+			end
+			if not beibis:isEmpty() then
+				if room:askForSkillInvoke(player,self:objectName()) then
+					if beibis:length() == 1 then 
+						beibis:first():drawCards(1)
+					else
+						while not beibis:isEmpty() do
+							local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
+							if beibi then
+								beibi:drawCards(1)
+								beibis:removeOne(beibi)
+							else
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+		return false
+	end,
+	can_trigger = function(self, target)
+		return target and not target:hasSkill(self:objectName())
+	end
+}
+EXhuaibeibei:addSkill("hongyan")
+EXhuaibeibei:addSkill(luayige)
+EXhuaibeibei:addSkill(luajianmei)
+sgs.LoadTranslationTable{
+	["#EXhuaibeibei"] = "歌姬",
+	["EXhuaibeibei"] = "EX怀贝贝",
+	["designer:EXhuaibeibei"] = "飞哥",
+	["cv:EXhuaibeibei"] = "——",
+	["illustrator:EXhuaibeibei"] = "稗田阿求",
+	["luayige"] = "亦歌",
+	[":luayige"] = "准备阶段开始时，你可以指定一名其他女性角色，直到你下次触发“亦歌”：你可以选择该角色的一项技能获得之（除主公技、限定技与觉醒技），你可以令这名角色获得技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以将这张武将牌替换为怀贝贝。",
+	["luajianmei"] = "兼美",
+	[":luajianmei"] = "<font color=\"orange\"><b>主公技</b></font>，每当其他角色使用或打出一张手牌时，或其他角色的判定牌生效后，若触发了技能“红颜”，该角色可以令你摸一张牌。",
+	
+	["@luayige"] = "请指定一名其他女性角色，获得其一项技能，然后可以赋予其技能“红颜”。",
+	["~luayige"] = "选择目标 → 选择技能 → 获得技能 → 赋予“红颜”",
+	["@give_hongyan"] = "赋予“红颜”？",
+	["@luajianmei-to"] = "选择发动“兼美”的目标，令其摸一张牌。",
+}
+EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 luapingfeng = sgs.CreateTriggerSkill {
 	name = "luapingfeng",
 	frequency = sgs.Skill_Compulsory,
@@ -264,7 +438,7 @@ EXhanjing:addSkill(luaduanyan)
 EXhanjing:addSkill(luapingfeng)
 sgs.LoadTranslationTable{
 	["#EXhanjing"] = "近君情怯",
-	["EXhanjing"] = "韩静",
+	["EXhanjing"] = "EX韩静",
 	["designer:EXhanjing"] = "飞哥",
 	["cv:EXhanjing"] = "——",
 	["illustrator:EXhanjing"] = "DH",
@@ -273,157 +447,4 @@ sgs.LoadTranslationTable{
 	["luaduanyan"] = "断雁",
 	[":luaduanyan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
 	["@luaduanyan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
-}
-
-EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
-luayigeCard = sgs.CreateSkillCard{
-	name = "luayigeCard",
-	filter = function(self, targets, to_select)
-		return #targets == 0 and to_select:isFemale() and to_select:objectName() ~= sgs.Self:objectName()
-	end,
-	feasible = function(self, targets)
-		return #targets > 0
-	end,
-	on_effect = function(self, effect)
-		local beibi = effect.from
-		local general = effect.to
-		local room = beibi:getRoom()
-		
-		local skill_names = {}
-		local skill_name
-		
-		for _,skill in sgs.qlist(general:getVisibleSkillList())do
-			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake then
-				continue
-			end
-			if not table.contains(skill_names,skill:objectName()) then
-				table.insert(skill_names,skill:objectName())
-			end
-		end
-		table.insert(skill_names,"@no_chioce")
-		if #skill_names > 0 then
-			skill_name = room:askForChoice(beibi, "luayige",table.concat(skill_names,"+"))
-		end
-		
-		if skill_name ~= "@no_chioce" then
-			beibi:setTag("luayige_skill",sgs.QVariant(skill_name))
-			room:handleAcquireDetachSkills(beibi, skill_name, true)
-			
-			if not general:hasSkill("hongyan") then
-				local give_hongyan = room:askForChoice(beibi, "@give_hongyan", "yes+no")
-				if give_hongyan == "yes" then
-					room:handleAcquireDetachSkills(general, "hongyan", true)
-					general:setMark("luayige",1)
-				end
-			end
-		end
-	end
-}
-luayigeVS = sgs.CreateZeroCardViewAsSkill{
-	name = "luayige",
-	enabled_at_play = function(self, player)
-		return false
-	end, 
-	enabled_at_response = function(self, player, pattern)
-		return pattern == "@@luayige"
-	end,
-	view_as = function()
-		return luayigeCard:clone()
-	end
-}
-luayige = sgs.CreateTriggerSkill{
-	name = "luayige",
-	frequency = sgs.Skill_NotFrequent,
-	events = {sgs.EventPhaseStart},
-	view_as_skill = luayigeVS,
-	on_trigger = function(self, event, beibi, data)
-		local room = beibi:getRoom()
-		if beibi:getPhase() == sgs.Player_Start then
-			if room:askForSkillInvoke(beibi, self:objectName()) then
-				local yige_skill = beibi:getTag("luayige_skill"):toString()
-				if yige_skill ~= "" then
-					room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
-					room:detachSkillFromPlayer(beibi, yige_skill, false, true)
-				end
-				beibi:removeTag("luayige_skill")
-				
-				for _, p in sgs.qlist(room:getAllPlayers()) do 
-					if p:getMark("luayige") > 0 then
-						p:removeMark("luayige")
-						if p:hasSkill("hongyan") then
-							room:detachSkillFromPlayer(p, "hongyan", false, true)
-						end
-						break
-					end
-				end
-				
-				room:askForUseCard(beibi, "@@luayige", "@luayige")
-			end
-		end
-	end
-}
-luajianmei = sgs.CreateTriggerSkill{
-	name = "luajianmei$",
-	frequency = sgs.Skill_NotFrequent,
-	events = {sgs.CardResponded, sgs.CardUsed, sgs.FinishJudge},
-	on_trigger = function(self, event, player, data)
-		local room = player:getRoom()
-		local card
-		if event == sgs.CardResponded then
-			card = data:toCardResponse().m_card
-		elseif event == sgs.CardUsed then
-			card = data:toCardUse().card
-		elseif event == sgs.FinishJudge then
-			card = data:toJudge().card
-		end
-		if card and card:getSkillName() == "hongyan" then
-			local beibis = sgs.SPlayerList()
-			for _, p in sgs.qlist(room:getOtherPlayers(player)) do
-				if p:hasLordSkill(self:objectName()) then
-					beibis:append(p)
-				end
-			end
-			if not beibis:isEmpty() then
-				if room:askForSkillInvoke(player,self:objectName()) then
-					if beibis:length() == 1 then 
-						beibis:first():drawCards(1)
-					else
-						while not beibis:isEmpty() do
-							local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
-							if beibi then
-								beibi:drawCards(1)
-								beibis:removeOne(beibi)
-							else
-								break
-							end
-						end
-					end
-				end
-			end
-		end
-		return false
-	end,
-	can_trigger = function(self, target)
-		return target and not target:hasSkill(self:objectName())
-	end
-}
-EXhuaibeibei:addSkill("hongyan")
-EXhuaibeibei:addSkill(luayige)
-EXhuaibeibei:addSkill(luajianmei)
-sgs.LoadTranslationTable{
-	["#EXhuaibeibei"] = "歌姬",
-	["EXhuaibeibei"] = "怀贝贝",
-	["designer:EXhuaibeibei"] = "飞哥",
-	["cv:EXhuaibeibei"] = "——",
-	["illustrator:EXhuaibeibei"] = "稗田阿求",
-	["luayige"] = "亦歌",
-	[":luayige"] = "准备阶段开始时，你可以指定一名其他女性角色，直到你下次触发“亦歌”：你可以选择该角色的一项技能获得之（除主公技、限定技与觉醒技），你可以令这名角色获得技能“红颜”。",
-	["luajianmei"] = "兼美",
-	[":luajianmei"] = "<font color=\"orange\"><b>主公技</b></font>，每当其他角色使用或打出一张手牌时，或其他角色的判定牌生效后，若触发了技能“红颜”，该角色可以令你摸一张牌。",
-	
-	["@luayige"] = "请指定一名其他女性角色，获得其一项技能，然后可以赋予其技能“红颜”。",
-	["~luayige"] = "选择目标 → 选择技能 → 获得技能 → 赋予“红颜”",
-	["@no_chioce"] = "取消",
-	["@give_hongyan"] = "赋予“红颜”？",
-	["@luajianmei-to"] = "选择发动“兼美”的目标，令其摸一张牌。",
 }
