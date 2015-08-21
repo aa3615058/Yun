@@ -206,10 +206,25 @@ luayigeCard = sgs.CreateSkillCard{
 	on_effect = function(self, effect)
 		local beibi = effect.from
 		local general = effect.to
-		local room = beibi:getRoom()
-		
+		local room = beibi:getRoom()		
 		local skill_names = {}
 		local skill_name
+		local yige_skill = beibi:getTag("luayige_skill"):toString()
+		
+		if yige_skill ~= "" then
+			room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
+			room:detachSkillFromPlayer(beibi, yige_skill, false, true)
+		end
+		beibi:removeTag("luayige_skill")
+		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
+			if p:getMark("luayige") > 0 then
+				p:removeMark("luayige")
+				if p:hasSkill("hongyan") then
+					room:detachSkillFromPlayer(p, "hongyan", false, true)
+				end
+				break
+			end
+		end
 		
 		for _,skill in sgs.qlist(general:getVisibleSkillList())do
 			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake then
@@ -257,24 +272,7 @@ luayige = sgs.CreateTriggerSkill{
 		local room = beibi:getRoom()
 		if event == sgs.EventPhaseStart then
 			if beibi:getPhase() == sgs.Player_Start then
-				if room:askForSkillInvoke(beibi, self:objectName()) then
-					local yige_skill = beibi:getTag("luayige_skill"):toString()
-					if yige_skill ~= "" then
-						room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
-						room:detachSkillFromPlayer(beibi, yige_skill, false, true)
-					end
-					beibi:removeTag("luayige_skill")
-					for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
-						if p:getMark("luayige") > 0 then
-							p:removeMark("luayige")
-							if p:hasSkill("hongyan") then
-								room:detachSkillFromPlayer(p, "hongyan", false, true)
-							end
-							break
-						end
-					end
-					room:askForUseCard(beibi, "@@luayige", "@luayige")
-				end
+				room:askForUseCard(beibi, "@@luayige", "@luayige")
 			end
 		elseif event == sgs.GameStart then
 			local existFemale = false
@@ -326,28 +324,35 @@ luajianmei = sgs.CreateTriggerSkill{
 					beibis:append(p)
 				end
 			end
-			if not beibis:isEmpty() then
-				if room:askForSkillInvoke(player,self:objectName()) then
-					if beibis:length() == 1 then 
-						beibis:first():drawCards(1)
-					else
-						while not beibis:isEmpty() do
-							local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
-							if beibi then
-								beibi:drawCards(1)
-								beibis:removeOne(beibi)
-							else
-								break
-							end
-						end
+			while not beibis:isEmpty() do
+				local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
+				if beibi then
+					--注意！没有配音将导致技能执行失败！
+					if not beibi:isLord() and beibi:hasSkill("weidi") then
+                        room:broadcastSkillInvoke("weidi")
+                    else
+                        room:broadcastSkillInvoke(self:objectName());
 					end
+					
+					room:notifySkillInvoked(beibi, self:objectName());
+					local msg = sgs.LogMessage()
+					msg.type = "#InvokeOthersSkill"
+					msg.from = player
+					msg.to:append(beibi)
+					msg.arg = self:objectName()
+					room:sendLog(msg)
+					
+					beibi:drawCards(1, self:objectName())
+					beibis:removeOne(beibi)
+				else
+					break
 				end
 			end
 		end
 		return false
 	end,
 	can_trigger = function(self, target)
-		return target and not target:hasSkill(self:objectName())
+		return target and target:hasSkill("hongyan") and not target:hasSkill(self:objectName())
 	end
 }
 EXhuaibeibei:addSkill("hongyan")
@@ -367,7 +372,7 @@ sgs.LoadTranslationTable{
 	["@luayige"] = "请指定一名其他女性角色，获得其一项技能，然后可以赋予其技能“红颜”。",
 	["~luayige"] = "选择目标 → 选择技能 → 获得技能 → 赋予“红颜”",
 	["@give_hongyan"] = "赋予“红颜”？",
-	["@luajianmei-to"] = "选择发动“兼美”的目标，令其摸一张牌。",
+	["@luajianmei-to"] = "请选择“兼美”的目标角色",
 }
 EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 luapingfeng = sgs.CreateTriggerSkill {
