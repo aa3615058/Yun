@@ -438,7 +438,50 @@ sgs.LoadTranslationTable{
 	["@luamiyu"] = "请选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）",
 	["~luamiyu"] = "选择目标 → 判定闪电",
 }
--- yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false)
+yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
+luazhangui = sgs.CreateTargetModSkill{
+	name = "luazhangui",
+	frequency = sgs.Skill_NotFrequent,
+	pattern = "Slash",
+	distance_limit_func = function(self, player)
+		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
+			return 1000
+		else
+			return 0
+		end
+	end,
+	extra_target_func = function(self, player)
+		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
+			return 2
+		else
+			return 0
+		end
+	end,
+}
+luadiaolue = sgs.CreateTriggerSkill{
+	name = "luadiaolue",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.DamageForseen},
+	can_trigger = function(self, target)
+		return target
+	end,
+	on_trigger = function(self, event, player, data)
+		return false
+	end
+}
+sgs.LoadTranslationTable{
+	["#yangwenqi"] = "佼佼者",
+	["yangwenqi"] = "杨文琦",
+	["designer:yangwenqi"] = "飞哥",
+	["cv:yangwenqi"] = "——",
+	["illustrator:yangwenqi"] = "红美玲",
+	["luazhangui"] = "战鬼",
+	[":luazhangui"] = "你于一回合内使用的首张【杀】可以额外指定至多两名角色为目标。<font color=\"blue\"><b>锁定技</b></font>，你使用【杀】无距离限制，你使用【杀】的所有目标角色需座次连续且至少有一名目标角色与你座次相邻。",
+	["luadiaolue"] = "调略",
+	[":luadiaolue"] = "出牌阶段，你可以将一张红色牌当【调虎离山】使用。",
+}
+yangwenqi:addSkill(luazhangui)
+yangwenqi:addSkill(luadiaolue)
 -- lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
 sgs.LoadTranslationTable{
 	["#yangwenqi"] = "佼佼者",
