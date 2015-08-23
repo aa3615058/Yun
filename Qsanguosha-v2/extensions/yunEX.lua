@@ -5,22 +5,13 @@ sgs.LoadTranslationTable{
 	["yunEX"] = "云EX包"
 }
 
-liyunpeng = sgs.General(extension, "liyunpeng", "wu", "3", true)
-liyunpeng_female = sgs.General(extension, "liyunpeng_female", "wu", "3", false, true, true)
--- function notifyLualanyanInvoked(skill_name, player, room)
-	-- local msg = sgs.LogMessage()
-	-- msg.type = "#InvokeSkill"
-	-- msg.from = player
-	-- msg.arg = skill_name
-	-- room:sendLog(msg)
-	-- msg.type = "#lualanyan"
-	-- room:sendLog(msg)
--- end
-function liyunpengImageChanged(name, player, room)
+EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", "3", true)
+EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
+function EXliyunpengImageChanged(name, player, room)
 	if player:getGeneralName() == name or player:getGeneral2Name() == name then
 		return
 	end
-	if name == "liyunpeng_female" then
+	if name == "EXliyunpeng_female" then
 		local msg = sgs.LogMessage()
 		msg.type = "#InvokeSkill"
 		msg.from = player
@@ -30,10 +21,10 @@ function liyunpengImageChanged(name, player, room)
 		msg.arg = "female"
 		room:sendLog(msg)
 	end
-	if player:getGeneralName() == "liyunpeng" or player:getGeneralName() == "liyunpeng_female" then
+	if player:getGeneralName() == "EXliyunpeng" or player:getGeneralName() == "EXliyunpeng_female" then
 		room:changeHero(player, name, false, false, false, false)
 	end
-	if player:getGeneral2Name() == "liyunpeng" or player:getGeneral2Name() == "liyunpeng_female" then
+	if player:getGeneral2Name() == "EXliyunpeng" or player:getGeneral2Name() == "EXliyunpeng_female" then
 		room:changeHero(player, name, false, false, true, false)
 	end
 end
@@ -47,22 +38,22 @@ lualanyan = sgs.CreateTriggerSkill{
 		if event == sgs.EventPhaseStart then
 			if player:getPhase() == sgs.Player_Start then
 				player:setGender(player:getGeneral():getGender())
-				liyunpengImageChanged("liyunpeng", player, room)
+				EXliyunpengImageChanged("EXliyunpeng", player, room)
 			end
 		elseif event == sgs.EventPhaseEnd then
 			if player:getPhase() == sgs.Player_Finish then
 				player:setGender(sgs.General_Female)
-				liyunpengImageChanged("liyunpeng_female", player, room)
+				EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 			end
 		elseif event == sgs.GameStart then
 			player:setGender(sgs.General_Female)
-			liyunpengImageChanged("liyunpeng_female", player, room)
+			EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
 			player:setGender(player:getGeneral():getGender())
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
 			if player:getPhase() == sgs.Player_NotActive then
 				player:setGender(sgs.General_Female)
-				liyunpengImageChanged("liyunpeng_female", player, room)
+				EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 			end
 		end
         return false
@@ -160,39 +151,28 @@ lualienv = sgs.CreateTriggerSkill{
 		return false
 	end
 }
-liyunpeng:addSkill(lualanyan)
-liyunpeng:addSkill(lualienv)
-liyunpeng_female:addSkill(lualanyan)
-liyunpeng_female:addSkill(lualienv)
+EXliyunpeng:addSkill(lualanyan)
+EXliyunpeng:addSkill(lualienv)
+EXliyunpeng_female:addSkill(lualanyan)
+EXliyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
-	["#liyunpeng"] = "飞女正传",
-	["liyunpeng"] = "EX李云鹏",
-	["designer:liyunpeng"] = "飞哥",
-	["cv:liyunpeng"] = "——",
-	["illustrator:liyunpeng"] = "织田信奈",	
+	["#EXliyunpeng"] = "飞女正传",
+	["EXliyunpeng"] = "EX李云鹏",
+	["designer:EXliyunpeng"] = "飞哥",
+	["cv:EXliyunpeng"] = "——",
+	["illustrator:EXliyunpeng"] = "织田信奈",	
 	["lualanyan"] = "蓝颜",
 	[":lualanyan"] = "<font color=\"blue\"><b>锁定技</b></font>，你的回合外，你的性别视为女。",
-	--["#lualanyan"] = "%from 在回合外的性别视为 <font color=\"yellow\"><b>女性</b></font>",
 	["#lualanyan"] = "%from 在回合外的性别视为 %arg",
 	["lualienv"] = "烈女",
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
-	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令任意一名角色回复一点体力。",
+	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令一名已受伤的角色回复一点体力。",
 	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
-	["#liyunpeng_female"] = "飞女正传",
-	["liyunpeng_female"] = "李云鹏",
-	["designer:liyunpeng_female"] = "飞哥",
-	["cv:liyunpeng_female"] = "——",
-	["illustrator:liyunpeng_female"] = "织田信奈",	
-}
-
--- EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
--- EXhuaibeibei:addSkill("hongyan")
-sgs.LoadTranslationTable{	
-	["#EXhuaibeibei"] = "歌姬",
-	["EXhuaibeibei"] = "怀贝贝",
-	["designer:EXhuaibeibei"] = "飞哥",
-	["cv:EXhuaibeibei"] = "——",
-	["illustrator:EXhuaibeibei"] = "稗田阿求"
+	["#EXliyunpeng_female"] = "飞女正传",
+	["EXliyunpeng_female"] = "EX李云鹏",
+	["designer:EXliyunpeng_female"] = "飞哥",
+	["cv:EXliyunpeng_female"] = "——",
+	["illustrator:EXliyunpeng_female"] = "织田信奈",	
 }
 EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 luayigeCard = sgs.CreateSkillCard{
@@ -283,15 +263,7 @@ luayige = sgs.CreateTriggerSkill{
 				end
 			end
 			if not existFemale then
-				--local convert = room:askForChoice(beibi, "@convert", "@@convert+cancel")
 				local general = room:askForGeneral(beibi, "huaibeibei+EXhuaibeibei", "EXhuaibeibei")
-				--if convert == "@@convert" then
-					-- if beibi:getGeneralName() == "EXhuaibeibei" then
-						-- room:changeHero(beibi, "huaibeibei", false, false, false, true)
-					-- elseif beibi:getGeneral2Name() == "EXhuaibeibei" then
-						-- room:changeHero(beibi, "huaibeibei", false, false, true, true)
-					-- end
-				-- end
 				if general == "huaibeibei" then
 					if beibi:getGeneralName() == "EXhuaibeibei" then
 						room:changeHero(beibi, "huaibeibei", false, false, false, true)
@@ -365,7 +337,7 @@ sgs.LoadTranslationTable{
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求",
 	["luayige"] = "亦歌",
-	[":luayige"] = "准备阶段开始时，你可以指定一名其他女性角色，直到你下次触发“亦歌”：你可以选择该角色的一项技能获得之（除主公技、限定技与觉醒技），你可以令这名角色获得技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以将这张武将牌替换为怀贝贝。",
+	[":luayige"] = "准备阶段开始时，你可以选择一名其他女性角色，直到你下次触发该技能：你可以选择拥有该角色的一项技能（除主公技、限定技与觉醒技），你可以令该角色拥有技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以失去技能“亦歌”，获得技能“天成”。",
 	["luajianmei"] = "兼美",
 	[":luajianmei"] = "<font color=\"orange\"><b>主公技</b></font>，每当其他角色使用或打出一张手牌时，或其他角色的判定牌生效后，若触发了技能“红颜”，该角色可以令你摸一张牌。",
 	

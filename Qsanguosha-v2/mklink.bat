@@ -4,7 +4,7 @@
 ::使用了windows系统的符号链接
 @echo off
 for %%a in (cd .) do (
-set yun_dir=%%~dpayun\
+set yun_dir=%%~dpayun\Qsanguosha-v2\
 )
 set q_dir=%~dp0
 

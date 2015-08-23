@@ -51,16 +51,23 @@ lualianji = sgs.CreateTriggerSkill{
 	on_trigger = function(self, event, player, data)
 		local victim = data:toDamage().to
 		local room = player:getRoom()
-		local jingmeizi = room:findPlayerBySkillName(self:objectName())
-		if not jingmeizi or not jingmeizi:isAlive() or jingmeizi:isNude()
-				or jingmeizi:getPhase() ~= sgs.Player_NotActive 
-				or not jingmeizi:canSlash(victim, nil, true) then
-			return false
+		local jingmeizis = sgs.SPlayerList()
+
+		for _, p in sgs.qlist(room:getAllPlayers()) do
+			if p:hasSkill(self:objectName()) then
+				jingmeizis:append(p)
+			end
 		end
-		if jingmeizi:askForSkillInvoke(self:objectName(), data) then
-			local prompt = string.format("@lualianji-slash", victim:objectName())
-			if room:askForUseSlashTo(jingmeizi, victim, prompt) then
-				jingmeizi:drawCards(1, self:objectName())
+		for _, jingmeizi in sgs.qlist(jingmeizis) do
+			if not jingmeizi:isAlive() 
+				or jingmeizi:isNude()
+				or jingmeizi:getPhase() ~= sgs.Player_NotActive 
+				or not jingmeizi:canSlash(victim, nil, true) 
+				then
+			elseif jingmeizi:askForSkillInvoke(self:objectName(), data) then
+				if room:askForUseSlashTo(jingmeizi, victim, "@lualianji-slash") then					
+					jingmeizi:drawCards(1, self:objectName())
+				end
 			end
 		end
 	end
@@ -136,12 +143,12 @@ sgs.LoadTranslationTable{
 	["illustrator:hanjing"] = "Natsu",
 	["lualianji"] = "连击",
 	[":lualianji"] = "你的回合外，每当你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后你摸一张牌。",
-	["@lualianji-slash"] = "对 %s 使用一张【杀】。",
+	["@lualianji-slash"] = "你可以使用一张【杀】。",
 	["~luaqiaopo"] = "选择一张杀 → 对该角色出杀",
 	["luaqiaopo"] = "巧破",
 	[":luaqiaopo"] = "每当你受到1点伤害时，你可以交给一名其他角色一张方块牌并将伤害转移之。",
 	["luaqiaopoCard"] = "巧破",
-	["@luaqiaopo-card"] = "交给一名角色一张方块牌来转移1点伤害。",
+	["@luaqiaopo-card"] = "交给一名角色一张方块牌来转移 1 点伤害。",
 	["~luaqiaopo"] = "受到1点伤害 → 选择一张方块牌 → 选择一名角色 → 该角色承受1点伤害并获得这张牌"
 }
 
@@ -283,7 +290,50 @@ sgs.LoadTranslationTable{
 	["luaxingcan_canuse"] = "该角色可以立即使用这张牌",
 	["luaxingcan_lockhandcard"] = "除处于濒死状态时，该角色不能使用或打出手牌直至回合结束",
 	["@luaxingcan"] = "你可以立即使用获得的“丝”",
-	["#test"] = "%arg!!!!!!"
+}
+yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
+luazhangui = sgs.CreateTargetModSkill{
+	name = "luazhangui",
+	frequency = sgs.Skill_NotFrequent,
+	pattern = "Slash",
+	distance_limit_func = function(self, player)
+		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
+			return 1000
+		else
+			return 0
+		end
+	end,
+	extra_target_func = function(self, player)
+		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
+			return 2
+		else
+			return 0
+		end
+	end,
+}
+luadiaolue = sgs.CreateTriggerSkill{
+	name = "luadiaolue",
+	frequency = sgs.Skill_NotFrequent,
+	events = {sgs.DamageForseen},
+	can_trigger = function(self, target)
+		return target
+	end,
+	on_trigger = function(self, event, player, data)
+		return false
+	end
+}
+yangwenqi:addSkill(luazhangui)
+yangwenqi:addSkill(luadiaolue)
+sgs.LoadTranslationTable{
+	["#yangwenqi"] = "佼佼者",
+	["yangwenqi"] = "杨文琦",
+	["designer:yangwenqi"] = "飞哥",
+	["cv:yangwenqi"] = "——",
+	["illustrator:yangwenqi"] = "红美玲",
+	["luazhangui"] = "战鬼",
+	[":luazhangui"] = "出牌阶段，你有以下技能：你本回合使用的首张【杀】可以额外指定至多两名角色为目标。<font color=\"blue\"><b>锁定技</b></font>，你使用【杀】无距离限制，你使用【杀】的所有目标角色需座次连续且至少有一名目标角色与你座次相邻。",
+	["luadiaolue"] = "调略",
+	[":luadiaolue"] = "你可以将一张红色牌当【调虎离山】使用。",
 }
 xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
 luaxiaohan = sgs.CreateTriggerSkill{
@@ -438,58 +488,8 @@ sgs.LoadTranslationTable{
 	["@luamiyu"] = "请选择至多X名其他角色，视为这些角色各判定一次【闪电】。X为你已损失体力值的一半（向上取整）",
 	["~luamiyu"] = "选择目标 → 判定闪电",
 }
-yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
-luazhangui = sgs.CreateTargetModSkill{
-	name = "luazhangui",
-	frequency = sgs.Skill_NotFrequent,
-	pattern = "Slash",
-	distance_limit_func = function(self, player)
-		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
-			return 1000
-		else
-			return 0
-		end
-	end,
-	extra_target_func = function(self, player)
-		if player:hasSkill(self:objectName()) and not player:hasFlag("zhangui_used") then
-			return 2
-		else
-			return 0
-		end
-	end,
-}
-luadiaolue = sgs.CreateTriggerSkill{
-	name = "luadiaolue",
-	frequency = sgs.Skill_NotFrequent,
-	events = {sgs.DamageForseen},
-	can_trigger = function(self, target)
-		return target
-	end,
-	on_trigger = function(self, event, player, data)
-		return false
-	end
-}
-sgs.LoadTranslationTable{
-	["#yangwenqi"] = "佼佼者",
-	["yangwenqi"] = "杨文琦",
-	["designer:yangwenqi"] = "飞哥",
-	["cv:yangwenqi"] = "——",
-	["illustrator:yangwenqi"] = "红美玲",
-	["luazhangui"] = "战鬼",
-	[":luazhangui"] = "你于一回合内使用的首张【杀】可以额外指定至多两名角色为目标。<font color=\"blue\"><b>锁定技</b></font>，你使用【杀】无距离限制，你使用【杀】的所有目标角色需座次连续且至少有一名目标角色与你座次相邻。",
-	["luadiaolue"] = "调略",
-	[":luadiaolue"] = "出牌阶段，你可以将一张红色牌当【调虎离山】使用。",
-}
-yangwenqi:addSkill(luazhangui)
-yangwenqi:addSkill(luadiaolue)
--- lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false)
-sgs.LoadTranslationTable{
-	["#yangwenqi"] = "佼佼者",
-	["yangwenqi"] = "杨文琦",
-	["designer:yangwenqi"] = "飞哥",
-	["cv:yangwenqi"] = "——",
-	["illustrator:yangwenqi"] = "红美玲",
-	
+lishuyu = sgs.General(extension, "lishuyu", "shu", "3", false, true)
+sgs.LoadTranslationTable{	
 	["#lishuyu"] = "咒术师",
 	["lishuyu"] = "李淑玉",
 	["designer:lishuyu"] = "飞哥",
