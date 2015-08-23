@@ -6,8 +6,8 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 
 ![image](Qsanguosha-v2/image/fullskin/generals/full/huaibeibei.png) 
 ![image](Qsanguosha-v2/image/fullskin/generals/full/EXliyunpeng.png)
-![image](Qsanguosha-v2/image/fullskin/generals/full/EXhuaibeibei.png)
-![image](Qsanguosha-v2/image/fullskin/generals/full/EXliyunpeng_female.png) 
+![image](Qsanguosha-v2/image/fullskin/generals/full/yangwenqiskin1.png)
+![image](Qsanguosha-v2/image/fullskin/generals/full/xiaosaskin1.png) 
 
 # general's LUA
 ## Developing ...
