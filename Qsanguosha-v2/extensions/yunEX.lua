@@ -435,7 +435,7 @@ sgs.LoadTranslationTable{
 	["EXhanjing"] = "EX韩静",
 	["designer:EXhanjing"] = "飞哥",
 	["cv:EXhanjing"] = "——",
-	["illustrator:EXhanjing"] = "DH",
+	["illustrator:EXhanjing"] = "比那名居天子",
 	["luapingfeng"] = "凭风",
 	[":luapingfeng"] = "<font color=\"blue\"><b>锁定技</b></font>，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
 	["luaduanyan"] = "断雁",

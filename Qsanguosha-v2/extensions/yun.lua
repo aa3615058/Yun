@@ -136,7 +136,7 @@ sgs.LoadTranslationTable{
 	["hanjing"] = "韩静",
 	["designer:hanjing"] = "飞哥",
 	["cv:hanjing"] = "——",
-	["illustrator:hanjing"] = "Natsu",
+	["illustrator:hanjing"] = "比那名居天子",
 	["lualianji"] = "连击",
 	[":lualianji"] = "你的回合外，每当你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后你摸一张牌。",
 	["@lualianji-slash"] = "你可以对受到伤害的角色使用一张【杀】。",
