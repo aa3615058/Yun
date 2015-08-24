@@ -22,6 +22,8 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 # AI
 
 # SKINS
+![image](Qsanguosha-v2/image/generals/card/hanjingskin1.jpg)
+![image](Qsanguosha-v2/image/generals/card/hanjingskin2.jpg)
 ![image](Qsanguosha-v2/image/generals/card/yangwenqiskin1.jpg)
 ![image](Qsanguosha-v2/image/generals/card/xiaosaskin1.jpg)
 ![image](Qsanguosha-v2/image/generals/card/EXliyunpeng_female.jpg)
@@ -31,4 +33,4 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](Qsanguosha-v2/image/generals/card/huaibeibeiskin3.jpg)
 ![image](Qsanguosha-v2/image/generals/card/huaibeibeiskin4.jpg)
 
-# ADUIO
+# AUDIO
