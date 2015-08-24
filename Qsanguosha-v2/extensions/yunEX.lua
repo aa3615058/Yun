@@ -5,8 +5,6 @@ sgs.LoadTranslationTable{
 	["yunEX"] = "云EX包"
 }
 
-EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", "3", true)
-EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
 function EXliyunpengImageChanged(name, player, room)
 	if player:getGeneralName() == name or player:getGeneral2Name() == name then
 		return
@@ -33,19 +31,22 @@ lualanyan = sgs.CreateTriggerSkill{
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.EventPhaseStart, sgs.EventPhaseEnd, sgs.EventAcquireSkill, sgs.EventLoseSkill,sgs.GameStart},
 	
+	can_trigger = function(self, target)
+		return target
+	end,
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
 		if event == sgs.EventPhaseStart then
-			if player:getPhase() == sgs.Player_Start then
+			if player:getPhase() == sgs.Player_Start and player:hasSkill(self:objectName(), true) then
 				player:setGender(player:getGeneral():getGender())
 				EXliyunpengImageChanged("EXliyunpeng", player, room)
 			end
 		elseif event == sgs.EventPhaseEnd then
-			if player:getPhase() == sgs.Player_Finish then
+			if player:getPhase() == sgs.Player_Finish and player:hasSkill(self:objectName(), true) then
 				player:setGender(sgs.General_Female)
 				EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 			end
-		elseif event == sgs.GameStart then
+		elseif event == sgs.GameStart and player:hasSkill(self:objectName(), true) then
 			player:setGender(sgs.General_Female)
 			EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
@@ -57,9 +58,8 @@ lualanyan = sgs.CreateTriggerSkill{
 			end
 		end
         return false
-	end	
+	end
 }
-
 lualienvCard = sgs.CreateSkillCard{
 	name = "lualienvCard",
 	target_fixed = false,
@@ -151,6 +151,8 @@ lualienv = sgs.CreateTriggerSkill{
 		return false
 	end
 }
+EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", "3", true)
+EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
 EXliyunpeng:addSkill(lualanyan)
 EXliyunpeng:addSkill(lualienv)
 EXliyunpeng_female:addSkill(lualanyan)
@@ -174,7 +176,6 @@ sgs.LoadTranslationTable{
 	["cv:EXliyunpeng_female"] = "——",
 	["illustrator:EXliyunpeng_female"] = "织田信奈",	
 }
-EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 luayigeCard = sgs.CreateSkillCard{
 	name = "luayigeCard",
 	filter = function(self, targets, to_select)
@@ -193,20 +194,19 @@ luayigeCard = sgs.CreateSkillCard{
 		
 		if yige_skill ~= "" then
 			room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
-			room:detachSkillFromPlayer(beibi, yige_skill, false, true)
 		end
 		beibi:removeTag("luayige_skill")
 		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
 			if p:getMark("luayige") > 0 then
 				p:removeMark("luayige")
 				if p:hasSkill("hongyan") then
-					room:detachSkillFromPlayer(p, "hongyan", false, true)
+					room:handleAcquireDetachSkills(p, string.format("-hongyan"), true)
 				end
 				break
 			end
 		end
 		
-		for _,skill in sgs.qlist(general:getVisibleSkillList())do
+		for _,skill in sgs.qlist(general:getVisibleSkillList()) do
 			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake then
 				continue
 			end
@@ -220,11 +220,11 @@ luayigeCard = sgs.CreateSkillCard{
 		end		
 		if skill_name ~= "cancel" then
 			beibi:setTag("luayige_skill",sgs.QVariant(skill_name))
-			room:handleAcquireDetachSkills(beibi, skill_name, true)
+			room:handleAcquireDetachSkills(beibi, skill_name)
 			if not general:hasSkill("hongyan") then
 				local give_hongyan = room:askForChoice(beibi, "@give_hongyan", "yes+no")
 				if give_hongyan == "yes" then
-					room:handleAcquireDetachSkills(general, "hongyan", true)
+					room:handleAcquireDetachSkills(general, "hongyan")
 					general:setMark("luayige",1)
 				end
 			end
@@ -250,26 +250,31 @@ luayige = sgs.CreateTriggerSkill{
 	view_as_skill = luayigeVS,
 	on_trigger = function(self, event, beibi, data)
 		local room = beibi:getRoom()
+		local existFemale = false
+		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
+			if p:isFemale() then
+				existFemale = true
+				break
+			end
+		end
 		if event == sgs.EventPhaseStart then
-			if beibi:getPhase() == sgs.Player_Start then
+			if beibi:getPhase() == sgs.Player_Start and existFemale then
 				room:askForUseCard(beibi, "@@luayige", "@luayige")
 			end
 		elseif event == sgs.GameStart then
-			local existFemale = false
-			for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
-				if p:isFemale() then
-					existFemale = true
-					break
-				end
-			end
 			if not existFemale then
-				local general = room:askForGeneral(beibi, "huaibeibei+EXhuaibeibei", "EXhuaibeibei")
-				if general == "huaibeibei" then
-					if beibi:getGeneralName() == "EXhuaibeibei" then
-						room:changeHero(beibi, "huaibeibei", false, false, false, true)
-					elseif beibi:getGeneral2Name() == "EXhuaibeibei" then
-						room:changeHero(beibi, "huaibeibei", false, false, true, true)
-					end
+				local choice = room:askForChoice(beibi, self:objectName(),"#yige_convert+cancel")
+				if choice == "#yige_convert" then
+					room:notifySkillInvoked(beibi, self:objectName())
+					local msg = sgs.LogMessage()
+					msg.type = "#InvokeSkill"
+					msg.from = beibi
+					msg.arg = self:objectName()
+					room:sendLog(msg)
+					
+					room:handleAcquireDetachSkills(beibi, string.format("-%s",self:objectName()))
+					room:handleAcquireDetachSkills(beibi, "-luajianmei")
+					room:handleAcquireDetachSkills(beibi, "luatiancheng")
 				end
 			end
 		end
@@ -327,6 +332,7 @@ luajianmei = sgs.CreateTriggerSkill{
 		return target and target:hasSkill("hongyan") and not target:hasSkill(self:objectName())
 	end
 }
+EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
 EXhuaibeibei:addSkill("hongyan")
 EXhuaibeibei:addSkill(luayige)
 EXhuaibeibei:addSkill(luajianmei)
@@ -337,38 +343,43 @@ sgs.LoadTranslationTable{
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求",
 	["luayige"] = "亦歌",
-	[":luayige"] = "准备阶段开始时，你可以选择一名其他女性角色，直到你下次触发该技能：你可以选择拥有该角色的一项技能（除主公技、限定技与觉醒技），你可以令该角色拥有技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以失去技能“亦歌”，获得技能“天成”。",
+	[":luayige"] = "准备阶段开始时，你可以选择一名其他女性角色，直到你下次触发该技能：你可以选择拥有该角色的一项技能（除主公技、限定技与觉醒技），你可以令该角色拥有技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以失去技能“亦歌”和“兼美”，获得技能“天成”。",
 	["luajianmei"] = "兼美",
 	[":luajianmei"] = "<font color=\"orange\"><b>主公技</b></font>，每当其他角色使用或打出一张手牌时，或其他角色的判定牌生效后，若触发了技能“红颜”，该角色可以令你摸一张牌。",
 	
 	["@luayige"] = "请指定一名其他女性角色，获得其一项技能，然后可以赋予其技能“红颜”。",
 	["~luayige"] = "选择目标 → 选择技能 → 获得技能 → 赋予“红颜”",
+	["#yige_convert"] = "失去“亦歌”和“兼美”，获得“天成”",
 	["@give_hongyan"] = "赋予“红颜”？",
 	["@luajianmei-to"] = "请选择“兼美”的目标角色",
 }
-EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 luapingfeng = sgs.CreateTriggerSkill {
 	name = "luapingfeng",
 	frequency = sgs.Skill_Compulsory,
 	events = {sgs.CardsMoveOneTime, sgs.EventAcquireSkill, sgs.EventLoseSkill, sgs.GameStart},
 	
+	--此处的can_trigger设置所有人为可触发对象，是为了on_trigger中的EventLoseSkill能够顺利执行。如果这里不这样设置，角色在失去该技能后，也就无法触发sgs.EventLoseSkill来清空相关技能了。
+	can_trigger = function(self, target)
+		return target
+	end,
 	on_trigger = function(self, event, player, data)
 		local room = player:getRoom()
-		if event == sgs.GameStart then
+		if event == sgs.GameStart and player:hasSkill(self:objectName()) then
 			room:handleAcquireDetachSkills(player, "feiying")
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
-			room:handleAcquireDetachSkills(player,"-feiying|-liuli",true)
+			room:handleAcquireDetachSkills(player, "-feiying|-liuli", true)
 		elseif event == sgs.EventAcquireSkill and data:toString() == self:objectName() then
+			room:notifySkillInvoked(player, self:objectName());
 			if player:hasEquip() then
 				room:handleAcquireDetachSkills(player, "liuli")
 			else
 				room:handleAcquireDetachSkills(player, "feiying")
 			end
-		elseif event == sgs.CardsMoveOneTime and player:isAlive() and player:hasSkill(self:objectName(),true) then
+		elseif event == sgs.CardsMoveOneTime and player:isAlive() and player:hasSkill(self:objectName(), true) then
 			local move = data:toMoveOneTime()
 			if move.to and move.to:objectName() == player:objectName() and move.to_place == sgs.Player_PlaceEquip then
 				if player:getEquips():length() == 1 then
-					room:handleAcquireDetachSkills(player,"-feiying|liuli")
+					room:handleAcquireDetachSkills(player,"-feiying|liuli", true)
 				end
 			elseif move.from and move.from:objectName() == player:objectName() and move.from_places:contains(sgs.Player_PlaceEquip) then
 				if not player:hasEquip() then
@@ -391,26 +402,32 @@ luaduanyan = sgs.CreateTriggerSkill {
 		if player:getGender() ~= sgs.General_Male or player:getPhase() ~= sgs.Player_Start then
 			return false
 		end
-		local jingmeizi = room:findPlayerBySkillName(self:objectName())
-		if not jingmeizi or not jingmeizi:isAlive() or not jingmeizi:canDiscard(jingmeizi, "he")
-				or jingmeizi:getPhase() == sgs.Player_Play then
-			return false
+		local jingmeizis = sgs.SPlayerList()
+		for _, p in sgs.qlist(room:getAllPlayers()) do
+			if p:hasSkill(self:objectName()) and p:isAlive() then
+				jingmeizis:append(p)
+			end
 		end
-		if room:askForSkillInvoke(jingmeizi, self:objectName()) then
-			local card = room:askForCard(jingmeizi, ".|diamond", "@luaduanyan-prompt", 
+		for _, jingmeizi in sgs.qlist(jingmeizis) do
+			if jingmeizi:canDiscard(jingmeizi, "he") then
+				if jingmeizi:askForSkillInvoke(self:objectName(), data) then
+					local card = room:askForCard(jingmeizi, ".|diamond", "@luaduanyan-prompt",
 								sgs.QVariant(), sgs.Card_MethodNone)
-			if card then
-				player:obtainCard(card)
-				room:damage(sgs.DamageStruct(self:objectName(), jingmeizi, player))
-				local x = math.floor(player:distanceTo(jingmeizi) / 2)
-				if x > 0 then
-					room:drawCards(player, x, self:objectName())
+					if card then
+						player:obtainCard(card)
+						room:damage(sgs.DamageStruct(self:objectName(), jingmeizi, player))
+						local x = math.floor(player:distanceTo(jingmeizi) / 2)
+						if x > 0 then
+							room:drawCards(player, x, self:objectName())
+						end
+					end
 				end
 			end
 		end
 		return false
 	end
 }
+EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
 EXhanjing:addSkill(luaduanyan)
 EXhanjing:addSkill(luapingfeng)
 sgs.LoadTranslationTable{

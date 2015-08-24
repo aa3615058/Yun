@@ -54,18 +54,18 @@ lualianji = sgs.CreateTriggerSkill{
 		local jingmeizis = sgs.SPlayerList()
 
 		for _, p in sgs.qlist(room:getAllPlayers()) do
-			if p:hasSkill(self:objectName()) then
+			if p:hasSkill(self:objectName()) and p:isAlive() and p:getPhase() == sgs.Player_NotActive and p:canSlash(victim, nil, true) then
 				jingmeizis:append(p)
 			end
 		end
 		for _, jingmeizi in sgs.qlist(jingmeizis) do
-			if not jingmeizi:isAlive() 
-				or jingmeizi:isNude()
-				or jingmeizi:getPhase() ~= sgs.Player_NotActive 
-				or not jingmeizi:canSlash(victim, nil, true) 
-				then
-			elseif jingmeizi:askForSkillInvoke(self:objectName(), data) then
+			if not jingmeizi:isNude() then
 				if room:askForUseSlashTo(jingmeizi, victim, "@lualianji-slash") then					
+					local msg = sgs.LogMessage()
+					msg.type = "#InvokeSkill"
+					msg.from = jingmeizi
+					msg.arg = self:objectName()
+					room:sendLog(msg)
 					jingmeizi:drawCards(1, self:objectName())
 				end
 			end
@@ -74,7 +74,7 @@ lualianji = sgs.CreateTriggerSkill{
 }
 luaqiaopoCard = sgs.CreateSkillCard{
 	name = "luaqiaopoCard", 
-	target_fixed = false, 
+	target_fixed = false,
 	will_throw = false, 
 	on_effect = function(self, effect)
 		local target = effect.to
@@ -115,10 +115,8 @@ luaqiaopo = sgs.CreateTriggerSkill{
 			local M = damage.damage
 			local x = 0
 			for i = 0, M-1, 1 do
-				if room:askForSkillInvoke(player, self:objectName()) then
-					if room:askForUseCard(player, "@@luaqiaopo", "@luaqiaopo-card") then
-						x = x + 1
-					end
+				if room:askForUseCard(player, "@@luaqiaopo", "@luaqiaopo-card") then
+					x = x + 1
 				else 
 					break
 				end
@@ -143,7 +141,7 @@ sgs.LoadTranslationTable{
 	["illustrator:hanjing"] = "Natsu",
 	["lualianji"] = "连击",
 	[":lualianji"] = "你的回合外，每当你攻击范围内的其他角色受到伤害时，你可以对其使用一张【杀】，然后你摸一张牌。",
-	["@lualianji-slash"] = "你可以使用一张【杀】。",
+	["@lualianji-slash"] = "你可以对受到伤害的角色使用一张【杀】。",
 	["~luaqiaopo"] = "选择一张杀 → 对该角色出杀",
 	["luaqiaopo"] = "巧破",
 	[":luaqiaopo"] = "每当你受到1点伤害时，你可以交给一名其他角色一张方块牌并将伤害转移之。",
@@ -255,7 +253,7 @@ luaxingcan = sgs.CreateTriggerSkill{
 		local room = player:getRoom()
 		if event == sgs.EventPhaseChanging then
 			local change = data:toPhaseChange()
-			if change.to == sgs.Player_NotActive and player:hasSkill(self:objectName())then
+			if change.to == sgs.Player_NotActive and player:hasSkill(self:objectName()) then
 				removeXingcanMarkAndLimitation(room)
 			end
 		elseif event == sgs.EventLoseSkill then
@@ -267,7 +265,6 @@ luaxingcan = sgs.CreateTriggerSkill{
 		elseif player:getMark("luaxingcan") > 0 and event == sgs.QuitDying then
 			room:setPlayerCardLimitation(player, "use,response", ".|.|.|hand", true)
 		end
-		return false
 	end
 }
 wangcan:addSkill(luasiwu)
@@ -335,7 +332,7 @@ sgs.LoadTranslationTable{
 	["luadiaolue"] = "调略",
 	[":luadiaolue"] = "你可以将一张红色牌当【调虎离山】使用。",
 }
-xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
+xiaosaskin1 = sgs.General(extension, "xiaosaskin1", "wei", "4", false)
 luaxiaohan = sgs.CreateTriggerSkill{
 	name = "luaxiaohan",
 	frequency = sgs.Skill_NotFrequent,
@@ -463,22 +460,20 @@ luamiyu = sgs.CreateTriggerSkill{
 	on_trigger = function(self, event, player, data)
 		if player:getPhase() == sgs.Player_Finish then
 			local room = player:getRoom()
-			if room:askForSkillInvoke(player, self:objectName()) then
-				room:askForUseCard(player, "@@luamiyu", "@luamiyu")
-			end
+			room:askForUseCard(player, "@@luamiyu", "@luamiyu") then
 		end
 	end
 }
-xiaosa:addSkill(luaxiaohan)
-xiaosa:addSkill(luaxiaohancompulsory)
+xiaosaskin1:addSkill(luaxiaohan)
+xiaosaskin1:addSkill(luaxiaohancompulsory)
 extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
-xiaosa:addSkill(luamiyu)
+xiaosaskin1:addSkill(luamiyu)
 sgs.LoadTranslationTable{
-	["#xiaosa"] = "闪电奇侠",
-	["xiaosa"] = "肖洒",
-	["designer:xiaosa"] = "飞哥",
-	["cv:xiaosa"] = "——",
-	["illustrator:xiaosa"] = "上白泽慧音",
+	["#xiaosaskin1"] = "闪电奇侠",
+	["xiaosaskin1"] = "肖洒",
+	["designer:xiaosaskin1"] = "飞哥",
+	["cv:xiaosaskin1"] = "——",
+	["illustrator:xiaosaskin1"] = "上白泽慧音",
 	["luaxiaohan"] = "潇寒",
 	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
 	["#luaxiaohancompulsory"] = "潇寒",
