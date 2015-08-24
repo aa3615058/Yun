@@ -1,11 +1,9 @@
 module("extensions.yun", package.seeall)
 extension = sgs.Package("yun")
-
 sgs.LoadTranslationTable{
 	["yun"] = "云包"
 }
 
-huaibeibei = sgs.General(extension, "huaibeibei", "wu", "4", false)
 luatiancheng = sgs.CreateTriggerSkill{
 	name = "luatiancheng",
 	frequency = sgs.Skill_Frequent,
@@ -28,6 +26,7 @@ luatiancheng = sgs.CreateTriggerSkill{
 		return false
 	end
 }
+huaibeibei = sgs.General(extension, "huaibeibei", "wu", "4", false)
 huaibeibei:addSkill("hongyan")
 huaibeibei:addSkill(luatiancheng)
 sgs.LoadTranslationTable{
@@ -40,7 +39,6 @@ sgs.LoadTranslationTable{
 	[":luatiancheng"] = "每当你使用或打出一张手牌时，或你的判定牌生效后，若触发了技能“红颜”，你可以摸一张牌。"
 }
 
-hanjing = sgs.General(extension, "hanjing", "wu", "3", false)
 lualianji = sgs.CreateTriggerSkill{
 	name = "lualianji",
 	frequency = sgs.Skill_NotFrequent,
@@ -74,8 +72,7 @@ lualianji = sgs.CreateTriggerSkill{
 }
 luaqiaopoCard = sgs.CreateSkillCard{
 	name = "luaqiaopoCard", 
-	target_fixed = false,
-	will_throw = false, 
+	will_throw = false,
 	on_effect = function(self, effect)
 		local target = effect.to
 		local room = target:getRoom()
@@ -131,6 +128,7 @@ luaqiaopo = sgs.CreateTriggerSkill{
 	end, 
 	priority = 2
 }
+hanjing = sgs.General(extension, "hanjing", "wu", "3", false)
 hanjing:addSkill(lualianji)
 hanjing:addSkill(luaqiaopo)
 sgs.LoadTranslationTable{
@@ -150,7 +148,6 @@ sgs.LoadTranslationTable{
 	["~luaqiaopo"] = "受到1点伤害 → 选择一张方块牌 → 选择一名角色 → 该角色承受1点伤害并获得这张牌"
 }
 
-wangcan = sgs.General(extension, "wangcan", "wei", "3", false)
 luasiwu = sgs.CreateMasochismSkill{
 	name = "luasiwu",
 	frequency = sgs.Skill_Frequent,
@@ -190,7 +187,6 @@ luasiwuremove = sgs.CreateTriggerSkill{
 }
 luaxingcanCard = sgs.CreateSkillCard{ 
 	name = "luaxingcanCard",
-	target_fixed = false,
 	will_throw = false,
 	filter = function(self, targets, to_select)
 		return true
@@ -267,6 +263,7 @@ luaxingcan = sgs.CreateTriggerSkill{
 		end
 	end
 }
+wangcan = sgs.General(extension, "wangcan", "wei", "3", false)
 wangcan:addSkill(luasiwu)
 wangcan:addSkill(luasiwuremove)
 extension:insertRelatedSkills("luasiwu","#luasiwuremove")
@@ -288,7 +285,6 @@ sgs.LoadTranslationTable{
 	["luaxingcan_lockhandcard"] = "除处于濒死状态时，该角色不能使用或打出手牌直至回合结束",
 	["@luaxingcan"] = "你可以立即使用获得的“丝”",
 }
-yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
 luazhangui = sgs.CreateTargetModSkill{
 	name = "luazhangui",
 	frequency = sgs.Skill_NotFrequent,
@@ -319,6 +315,7 @@ luadiaolue = sgs.CreateTriggerSkill{
 		return false
 	end
 }
+yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
 yangwenqi:addSkill(luazhangui)
 yangwenqi:addSkill(luadiaolue)
 sgs.LoadTranslationTable{
@@ -332,7 +329,6 @@ sgs.LoadTranslationTable{
 	["luadiaolue"] = "调略",
 	[":luadiaolue"] = "你可以将一张红色牌当【调虎离山】使用。",
 }
-xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
 luaxiaohan = sgs.CreateTriggerSkill{
 	name = "luaxiaohan",
 	frequency = sgs.Skill_NotFrequent,
@@ -464,6 +460,7 @@ luamiyu = sgs.CreateTriggerSkill{
 		end
 	end
 }
+xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
 xiaosa:addSkill(luaxiaohan)
 xiaosa:addSkill(luaxiaohancompulsory)
 extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
