@@ -332,7 +332,7 @@ sgs.LoadTranslationTable{
 	["luadiaolue"] = "调略",
 	[":luadiaolue"] = "你可以将一张红色牌当【调虎离山】使用。",
 }
-xiaosaskin1 = sgs.General(extension, "xiaosaskin1", "wei", "4", false)
+xiaosa = sgs.General(extension, "xiaosa", "wei", "4", false)
 luaxiaohan = sgs.CreateTriggerSkill{
 	name = "luaxiaohan",
 	frequency = sgs.Skill_NotFrequent,
@@ -460,20 +460,20 @@ luamiyu = sgs.CreateTriggerSkill{
 	on_trigger = function(self, event, player, data)
 		if player:getPhase() == sgs.Player_Finish then
 			local room = player:getRoom()
-			room:askForUseCard(player, "@@luamiyu", "@luamiyu") then
+			room:askForUseCard(player, "@@luamiyu", "@luamiyu")
 		end
 	end
 }
-xiaosaskin1:addSkill(luaxiaohan)
-xiaosaskin1:addSkill(luaxiaohancompulsory)
+xiaosa:addSkill(luaxiaohan)
+xiaosa:addSkill(luaxiaohancompulsory)
 extension:insertRelatedSkills("luaxiaohan","#luaxiaohancompulsory")
-xiaosaskin1:addSkill(luamiyu)
+xiaosa:addSkill(luamiyu)
 sgs.LoadTranslationTable{
-	["#xiaosaskin1"] = "闪电奇侠",
-	["xiaosaskin1"] = "肖洒",
-	["designer:xiaosaskin1"] = "飞哥",
-	["cv:xiaosaskin1"] = "——",
-	["illustrator:xiaosaskin1"] = "上白泽慧音",
+	["#xiaosa"] = "闪电奇侠",
+	["xiaosa"] = "肖洒",
+	["designer:xiaosa"] = "飞哥",
+	["cv:xiaosa"] = "——",
+	["illustrator:xiaosa"] = "上白泽慧音",
 	["luaxiaohan"] = "潇寒",
 	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
 	["#luaxiaohancompulsory"] = "潇寒",
