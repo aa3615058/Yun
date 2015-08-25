@@ -4,8 +4,10 @@ Based on Qsanguosha-v2.https://github.com/Mogara/QSanguosha-v2
 
 I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming, aimed to add these generals into Qsanguosha-v2.
 
+![image](Qsanguosha-v2/image/fullskin/generals/full/xiaosaskin1.png)
 ![image](Qsanguosha-v2/image/fullskin/generals/full/yangwenqiskin1.png)
-![image](Qsanguosha-v2/image/fullskin/generals/full/xiaosaskin1.png) 
+![image](Qsanguosha-v2/image/fullskin/generals/full/EXhuaibeibei.png)
+![image](Qsanguosha-v2/image/fullskin/generals/full/hanjing.png)
 
 # general's LUA
 ## Developing ...
