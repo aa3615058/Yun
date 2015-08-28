@@ -9,7 +9,13 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](Qsanguosha-v2/image/fullskin/generals/full/EXhuaibeibei.png)
 ![image](Qsanguosha-v2/image/fullskin/generals/full/hanjing.png)
 
-# general's LUA
+## Progress
+- [x] **Design**
+- [ ] **Program**
+- [x] **Skins**
+- [ ] **AI**
+- [ ] **Audio**
+
 ## Developing ...
 ![image](Qsanguosha-v2/image/generals/card/huaibeibei.jpg) 
 ![image](Qsanguosha-v2/image/generals/card/hanjing.jpg)
@@ -21,9 +27,7 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](Qsanguosha-v2/image/generals/card/EXhuaibeibei.jpg)
 ![image](Qsanguosha-v2/image/generals/card/EXhanjing.jpg)
 
-# AI
-
-# SKINS
+## SKINS
 ![image](Qsanguosha-v2/image/generals/card/hanjingskin1.jpg)
 ![image](Qsanguosha-v2/image/generals/card/hanjingskin2.jpg)
 ![image](Qsanguosha-v2/image/generals/card/yangwenqiskin1.jpg)
@@ -35,4 +39,6 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](Qsanguosha-v2/image/generals/card/huaibeibeiskin3.jpg)
 ![image](Qsanguosha-v2/image/generals/card/huaibeibeiskin4.jpg)
 
-# AUDIO
+## AI
+
+## AUDIO
