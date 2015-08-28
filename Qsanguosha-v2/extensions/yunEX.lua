@@ -62,7 +62,6 @@ lualanyan = sgs.CreateTriggerSkill{
 }
 lualienvCard = sgs.CreateSkillCard{
 	name = "lualienvCard",
-	target_fixed = false,
 	will_throw = true,
 	filter = function(self, targets, to_select)
 		return (#targets == 0) and (to_select:isWounded())
@@ -152,9 +151,9 @@ lualienv = sgs.CreateTriggerSkill{
 	end
 }
 EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", "3", true)
-EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
 EXliyunpeng:addSkill(lualanyan)
 EXliyunpeng:addSkill(lualienv)
+EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
 EXliyunpeng_female:addSkill(lualanyan)
 EXliyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
@@ -168,7 +167,7 @@ sgs.LoadTranslationTable{
 	["#lualanyan"] = "%from 在回合外的性别视为 %arg",
 	["lualienv"] = "烈女",
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
-	["@lualienv_prompt"] = "\"烈女\"判定结果为红色，你可以弃一张牌（包括装备）令一名已受伤的角色回复一点体力。",
+	["@lualienv_prompt"] = "技能“烈女”判定结果为红色，你可以弃一张牌（包括装备）令一名已受伤的角色回复一点体力。",
 	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
 	["#EXliyunpeng_female"] = "飞女正传",
 	["EXliyunpeng_female"] = "EX李云鹏",
@@ -390,10 +389,42 @@ luapingfeng = sgs.CreateTriggerSkill {
 		return false
 	end
 }
+luaduanyanCard = sgs.CreateSkillCard{
+	name = "luaduanyanCard",
+	will_throw = false,
+	target_fixed = true,
+	on_use = function(self, room, source, targets)
+		local target = room:getCurrent()
+		local jingmeizi = source
+		target:obtainCard(self)
+		room:damage(sgs.DamageStruct(self:objectName(), jingmeizi, target, 1))
+		local x = math.floor(target:distanceTo(jingmeizi) / 2)
+		if x > 0 then
+			room:drawCards(target, x, "luaduanyan")
+		end
+	end
+}
+luaduanyanVS = sgs.CreateOneCardViewAsSkill{
+	name = "luaduanyan",
+	filter_pattern = ".|diamond",
+	view_as = function(self, card)
+		local c = luaduanyanCard:clone()
+		c:addSubcard(card)
+		c:setSkillName(self:objectName())
+		return c
+	end, 
+	enabled_at_play = function(self, player)
+		return false
+	end, 
+	enabled_at_response = function(self, player, pattern)
+		return pattern == "@@luaduanyan"
+	end
+}
 luaduanyan = sgs.CreateTriggerSkill {
 	name = "luaduanyan",
 	frequency = sgs.Skill_NotFrequent,
 	events = {sgs.EventPhaseStart},
+	view_as_skill = luaduanyanVS, 
 	can_trigger = function(self, target)
 		return target
 	end,
@@ -410,18 +441,7 @@ luaduanyan = sgs.CreateTriggerSkill {
 		end
 		for _, jingmeizi in sgs.qlist(jingmeizis) do
 			if jingmeizi:canDiscard(jingmeizi, "he") then
-				if jingmeizi:askForSkillInvoke(self:objectName(), data) then
-					local card = room:askForCard(jingmeizi, ".|diamond", "@luaduanyan-prompt",
-								sgs.QVariant(), sgs.Card_MethodNone)
-					if card then
-						player:obtainCard(card)
-						room:damage(sgs.DamageStruct(self:objectName(), jingmeizi, player))
-						local x = math.floor(player:distanceTo(jingmeizi) / 2)
-						if x > 0 then
-							room:drawCards(player, x, self:objectName())
-						end
-					end
-				end
+				room:askForUseCard(jingmeizi, "@@luaduanyan", "@luaduanyan-prompt")
 			end
 		end
 		return false
@@ -440,5 +460,6 @@ sgs.LoadTranslationTable{
 	[":luapingfeng"] = "<font color=\"blue\"><b>锁定技</b></font>，你的装备区没有牌时，视为你拥有技能“飞影”；你的装备区有牌时，视为你拥有技能“流离”。",
 	["luaduanyan"] = "断雁",
 	[":luaduanyan"] = "一名男性角色的准备阶段开始时，你可以交给其一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。",
-	["@luaduanyan-prompt"] = "你可以交给这名角色一张方块牌，这名角色受到你造成的1点伤害并摸X张牌，X为这名角色与你的距离的一半（向下取整）。"
+	["@luaduanyan-prompt"] = "你可以交给这名角色一张方块牌来发动技能“断雁”。",
+	["~luaduanyan"] = "交给卡牌 → 该角色受到伤害 → 该角色摸牌",
 }

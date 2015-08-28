@@ -171,20 +171,6 @@ luasiwu = sgs.CreateMasochismSkill{
 		end
 	end
 }
-luasiwuremove = sgs.CreateTriggerSkill{
-	name = "#luasiwuremove",
-	frequency = sgs.Skill_Compulsory,
-	events = {sgs.EventLoseSkill},
-	on_trigger = function(self, event, player, data)
-		if data:toString() == "luasiwu" then
-			player:clearOnePrivatePile("&wire")
-		end
-		return false
-	end,
-	can_trigger = function(self, target)
-		return target
-	end
-}
 luaxingcanCard = sgs.CreateSkillCard{ 
 	name = "luaxingcanCard",
 	will_throw = false,
@@ -265,8 +251,6 @@ luaxingcan = sgs.CreateTriggerSkill{
 }
 wangcan = sgs.General(extension, "wangcan", "wei", "3", false)
 wangcan:addSkill(luasiwu)
-wangcan:addSkill(luasiwuremove)
-extension:insertRelatedSkills("luasiwu","#luasiwuremove")
 wangcan:addSkill(luaxingcan)
 sgs.LoadTranslationTable{
 	["#wangcan"] = "星光飞舞",
@@ -304,16 +288,26 @@ luazhangui = sgs.CreateTargetModSkill{
 		end
 	end,
 }
-luadiaolue = sgs.CreateTriggerSkill{
-	name = "luadiaolue",
-	frequency = sgs.Skill_NotFrequent,
-	events = {sgs.DamageForseen},
-	can_trigger = function(self, target)
-		return target
+
+luadiaolueCard = sgs.CreateTrickCard {
+	name = "luadiaolueCard",
+	filter = function(self, targets, to_select)
+		return #targets < 2 and to_select:objectName() ~= sgs.Self:objectName()
 	end,
-	on_trigger = function(self, event, player, data)
-		return false
-	end
+	feasible = function(self, targets)
+		return #targets > 0
+	end,
+}
+
+luadiaolue = sgs.CreateOneCardViewAsSkill{
+	name = "luadiaolue",
+	filter_pattern = ".|red",
+	view_as = function(self, card) 
+		local acard = sgs.Sanguosha:cloneCard("luadiaolueCard", card:getSuit(), card:getNumber())
+		acard:addSubcard(card:getId())
+		acard:setSkillName(self:objectName())
+		return acard
+	end,
 }
 yangwenqi = sgs.General(extension, "yangwenqi", "shu", "4", false, true)
 yangwenqi:addSkill(luazhangui)
