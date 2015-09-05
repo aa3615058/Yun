@@ -41,6 +41,11 @@ for /f %%i in ('dir /b %yun_s%') do (
 mklink %q_t%%%i %yun_s%%%i
 )
 
+::heroskin
+set yun_s=%yun_dir%image\heroskin
+set q_t=%q_dir%image\heroskin
+mklink /D %q_t% %yun_s%
+
 ::audio\skill
 set yun_s=%yun_dir%audio\skill\
 set q_t=%q_dir%audio\skill\
