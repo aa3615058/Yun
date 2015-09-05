@@ -46,7 +46,7 @@ lualanyan = sgs.CreateTriggerSkill{
 				player:setGender(sgs.General_Female)
 				EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 			end
-		elseif event == sgs.GameStart and player:hasSkill(self:objectName(), true) then
+		elseif event == sgs.GameStart and player:hasSkill(self:objectName(), true) and player:getPhase() == sgs.Player_NotActive then
 			player:setGender(sgs.General_Female)
 			EXliyunpengImageChanged("EXliyunpeng_female", player, room)
 		elseif event == sgs.EventLoseSkill and data:toString() == self:objectName() then
