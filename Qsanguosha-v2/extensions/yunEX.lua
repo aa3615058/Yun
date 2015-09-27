@@ -157,7 +157,7 @@ EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", fal
 EXliyunpeng_female:addSkill(lualanyan)
 EXliyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
-	["#EXliyunpeng"] = "飞女正传",
+	["#EXliyunpeng"] = "精神贵族",
 	["EXliyunpeng"] = "EX李云鹏",
 	["designer:EXliyunpeng"] = "飞哥",
 	["cv:EXliyunpeng"] = "——",
@@ -169,7 +169,7 @@ sgs.LoadTranslationTable{
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
 	["@lualienv_prompt"] = "技能“烈女”判定结果为红色，你可以弃一张牌（包括装备）令一名已受伤的角色回复一点体力。",
 	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
-	["#EXliyunpeng_female"] = "飞女正传",
+	["#EXliyunpeng_female"] = "精神贵族",
 	["EXliyunpeng_female"] = "EX李云鹏",
 	["designer:EXliyunpeng_female"] = "飞哥",
 	["cv:EXliyunpeng_female"] = "——",
