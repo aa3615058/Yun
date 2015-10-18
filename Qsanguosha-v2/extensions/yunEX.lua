@@ -169,7 +169,7 @@ sgs.LoadTranslationTable{
 	[":lualienv"] = "每当你受到异性角色造成的一次伤害后，或你对同性角色造成一次伤害后，你可以进行一次判定，若结果为黑色，你获得此牌；若结果为红色，你可以弃置一张牌令一名已受伤的角色回复一点体力。",
 	["@lualienv_prompt"] = "技能“烈女”判定结果为红色，你可以弃一张牌（包括装备）令一名已受伤的角色回复一点体力。",
 	["~lualienv"] = "请弃一张牌（包括装备）并指定一名已受伤角色。",
-	["#EXliyunpeng_female"] = "精神贵族",
+	["#EXliyunpeng_female"] = "飞女正传",
 	["EXliyunpeng_female"] = "EX李云鹏",
 	["designer:EXliyunpeng_female"] = "飞哥",
 	["cv:EXliyunpeng_female"] = "——",
@@ -206,7 +206,14 @@ luayigeCard = sgs.CreateSkillCard{
 		end
 		
 		for _,skill in sgs.qlist(general:getVisibleSkillList()) do
-			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake then
+			--EX怀贝贝和左慈一样，不能复制主公技，限定技，觉醒技
+			--贯石斧实现存在一定问题，一名角色装备贯石斧然后卸载后，会在技能列表里多出一个“贯石斧”的技能
+			--黄天送牌，制霸拼点，陷嗣出杀，这些本不属于技能的范畴，但这个框架用技能来实现，这里也要屏蔽掉
+			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake 
+			or skill:objectName() == "axe"
+			or skill:objectName() == "huangtian_attach"
+			or skill:objectName() == "zhiba_pindian"
+			or skill:objectName() == "xiansi_slash" then
 				continue
 			end
 			if not table.contains(skill_names,skill:objectName()) then
@@ -251,7 +258,11 @@ luayige = sgs.CreateTriggerSkill{
 		local room = beibi:getRoom()
 		local existFemale = false
 		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
-			if p:isFemale() then
+			--EX李云鹏的“蓝颜”实现不佳，回合开始时才修改性别，与此技能的时机冲突
+			--EX李云鹏应该视为女性角色，这里做出弥补
+			if p:isFemale() 
+			or p:getGeneralName() == "EXliyunpeng" 
+			or p:getGeneral2Name() == "EXliyunpeng" then
 				existFemale = true
 				break
 			end
@@ -301,6 +312,7 @@ luajianmei = sgs.CreateTriggerSkill{
 				end
 			end
 			while not beibis:isEmpty() do
+				
 				local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
 				if beibi then
 					--注意！没有配音将导致技能执行失败！
