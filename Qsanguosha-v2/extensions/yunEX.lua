@@ -150,10 +150,10 @@ lualienv = sgs.CreateTriggerSkill{
 		return false
 	end
 }
-EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", "3", true)
+EXliyunpeng = sgs.General(extension, "EXliyunpeng", "wu", 3, true)
 EXliyunpeng:addSkill(lualanyan)
 EXliyunpeng:addSkill(lualienv)
-EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", "3", false, true, true)
+EXliyunpeng_female = sgs.General(extension, "EXliyunpeng_female", "wu", 3, false, true, true)
 EXliyunpeng_female:addSkill(lualanyan)
 EXliyunpeng_female:addSkill(lualienv)
 sgs.LoadTranslationTable{
@@ -195,9 +195,9 @@ luayigeCard = sgs.CreateSkillCard{
 			room:handleAcquireDetachSkills(beibi, string.format("-%s",yige_skill), true)
 		end
 		beibi:removeTag("luayige_skill")
-		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do 
-			if p:getMark("luayige") > 0 then
-				p:removeMark("luayige")
+		for _, p in sgs.qlist(room:getOtherPlayers(beibi)) do
+			if p:getMark("@hongyanyige") > 0 then
+				p:loseMark("@hongyanyige")
 				if p:hasSkill("hongyan") then
 					room:handleAcquireDetachSkills(p, string.format("-hongyan"), true)
 				end
@@ -207,7 +207,7 @@ luayigeCard = sgs.CreateSkillCard{
 		
 		for _,skill in sgs.qlist(general:getVisibleSkillList()) do
 			--EX怀贝贝和左慈一样，不能复制主公技，限定技，觉醒技
-			--贯石斧实现存在一定问题，一名角色装备贯石斧然后卸载后，会在技能列表里多出一个“贯石斧”的技能
+			--这个框架贯石斧实现存在一定问题，一名角色装备贯石斧然后卸载后，会在技能列表里多出一个“贯石斧”的技能
 			--黄天送牌，制霸拼点，陷嗣出杀，这些本不属于技能的范畴，但这个框架用技能来实现，这里也要屏蔽掉
 			if skill:isLordSkill() or skill:getFrequency() == sgs.Skill_Limited or skill:getFrequency() == sgs.Skill_Wake 
 			or skill:objectName() == "axe"
@@ -231,7 +231,7 @@ luayigeCard = sgs.CreateSkillCard{
 				local give_hongyan = room:askForChoice(beibi, "@give_hongyan", "yes+no")
 				if give_hongyan == "yes" then
 					room:handleAcquireDetachSkills(general, "hongyan")
-					general:setMark("luayige",1)
+					general:gainMark("@hongyanyige")
 				end
 			end
 		end
@@ -261,8 +261,7 @@ luayige = sgs.CreateTriggerSkill{
 			--EX李云鹏的“蓝颜”实现不佳，回合开始时才修改性别，与此技能的时机冲突
 			--EX李云鹏应该视为女性角色，这里做出弥补
 			if p:isFemale() 
-			or p:getGeneralName() == "EXliyunpeng" 
-			or p:getGeneral2Name() == "EXliyunpeng" then
+			or p:hasSkill("lualanyan") then
 				existFemale = true
 				break
 			end
@@ -304,46 +303,67 @@ luajianmei = sgs.CreateTriggerSkill{
 		elseif event == sgs.FinishJudge then
 			card = data:toJudge().card
 		end
+		local can_invoke = 0
 		if card and card:getSkillName() == "hongyan" then
+			can_invoke = can_invoke + 1
+		elseif card then
+			local subcards = card:getSubcards()
+			if subcards ~= nil then
+				for _, id in sgs.qlist(subcards) do
+					local subcard = sgs.Sanguosha:getCard(id)
+					if subcard:getSkillName() == "hongyan" then
+						can_invoke = can_invoke + 1
+					end
+				end
+			end
+		end
+		if can_invoke > 0 then
 			local beibis = sgs.SPlayerList()
 			for _, p in sgs.qlist(room:getOtherPlayers(player)) do
 				if p:hasLordSkill(self:objectName()) then
 					beibis:append(p)
 				end
 			end
-			while not beibis:isEmpty() do
-				
-				local beibi = room:askForPlayerChosen(player, beibis, self:objectName(), "@luajianmei-to", true)
-				if beibi then
-					--注意！没有配音将导致技能执行失败！
-					if not beibi:isLord() and beibi:hasSkill("weidi") then
-                        room:broadcastSkillInvoke("weidi")
-                    else
-                        room:broadcastSkillInvoke(self:objectName());
+			if not beibis:isEmpty() then
+				for i = 0, can_invoke - 1, 1 do
+					local beibis_temp = sgs.SPlayerList()
+					for _, p in sgs.qlist(beibis) do
+						beibis_temp:append(p)
 					end
-					
-					room:notifySkillInvoked(beibi, self:objectName());
-					local msg = sgs.LogMessage()
-					msg.type = "#InvokeOthersSkill"
-					msg.from = player
-					msg.to:append(beibi)
-					msg.arg = self:objectName()
-					room:sendLog(msg)
-					
-					beibi:drawCards(1, self:objectName())
-					beibis:removeOne(beibi)
-				else
-					break
+					while not beibis_temp:isEmpty() do
+						local beibi = room:askForPlayerChosen(player, beibis_temp, self:objectName(), "@luajianmei-to", true)
+						if beibi then
+							--注意！没有配音将导致技能执行失败！
+							if not beibi:isLord() and beibi:hasSkill("weidi") then
+								room:broadcastSkillInvoke("weidi")
+							else
+								room:broadcastSkillInvoke(self:objectName());
+							end
+							
+							room:notifySkillInvoked(beibi, self:objectName());
+							local msg = sgs.LogMessage()
+							msg.type = "#InvokeOthersSkill"
+							msg.from = player
+							msg.to:append(beibi)
+							msg.arg = self:objectName()
+							room:sendLog(msg)
+							
+							beibi:drawCards(1, self:objectName())
+							beibis_temp:removeOne(beibi)
+						else
+							break
+						end
+					end
 				end
 			end
 		end
 		return false
 	end,
 	can_trigger = function(self, target)
-		return target and target:hasSkill("hongyan") and not target:hasSkill(self:objectName())
+		return target and target:hasSkill("hongyan")
 	end
 }
-EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", "4", false)
+EXhuaibeibei = sgs.General(extension, "EXhuaibeibei$", "wu", 4, false)
 EXhuaibeibei:addSkill("hongyan")
 EXhuaibeibei:addSkill(luayige)
 EXhuaibeibei:addSkill(luajianmei)
@@ -354,12 +374,13 @@ sgs.LoadTranslationTable{
 	["cv:EXhuaibeibei"] = "——",
 	["illustrator:EXhuaibeibei"] = "稗田阿求",
 	["luayige"] = "亦歌",
-	[":luayige"] = "准备阶段开始时，你可以选择一名其他女性角色，直到你下次触发该技能：你可以选择拥有该角色的一项技能（除主公技、限定技与觉醒技），你可以令该角色拥有技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以失去技能“亦歌”和“兼美”，获得技能“天成”。",
+	[":luayige"] = "准备阶段开始时，你可以选择一名其他女性角色，直到你下次触发该技能：你可以选择拥有该角色的一项武将技能（除主公技、限定技与觉醒技），你可以令该角色拥有技能“红颜”。游戏开始时，若场上没有其他女性角色，你可以失去技能“亦歌”和“兼美”，获得技能“天成”。",
 	["luajianmei"] = "兼美",
 	[":luajianmei"] = "<font color=\"orange\"><b>主公技</b></font>，每当其他角色使用或打出一张手牌时，或其他角色的判定牌生效后，若触发了技能“红颜”，该角色可以令你摸一张牌。",
 	
 	["@luayige"] = "请指定一名其他女性角色，获得其一项技能，然后可以赋予其技能“红颜”。",
 	["~luayige"] = "选择目标 → 选择技能 → 获得技能 → 赋予“红颜”",
+	["@hongyanyige"] = "红颜亦歌",
 	["#yige_convert"] = "失去“亦歌”和“兼美”，获得“天成”",
 	["@give_hongyan"] = "赋予“红颜”？",
 	["@luajianmei-to"] = "请选择“兼美”的目标角色",
@@ -459,7 +480,7 @@ luaduanyan = sgs.CreateTriggerSkill {
 		return false
 	end
 }
-EXhanjing = sgs.General(extension, "EXhanjing", "wu", "3", false)
+EXhanjing = sgs.General(extension, "EXhanjing", "wu", 3, false)
 EXhanjing:addSkill(luaduanyan)
 EXhanjing:addSkill(luapingfeng)
 sgs.LoadTranslationTable{

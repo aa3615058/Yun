@@ -46,6 +46,13 @@ set yun_s=%yun_dir%image\heroskin
 set q_t=%q_dir%image\heroskin
 mklink /D %q_t% %yun_s%
 
+::image\fullskin\generals\full
+set yun_s=%yun_dir%image\mark\
+set q_t=%q_dir%image\mark\
+for /f %%i in ('dir /b %yun_s%') do (
+mklink %q_t%%%i %yun_s%%%i
+)
+
 ::audio\skill
 set yun_s=%yun_dir%audio\skill\
 set q_t=%q_dir%audio\skill\
