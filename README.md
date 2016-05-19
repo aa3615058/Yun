@@ -21,7 +21,7 @@ I have designed some generals for my lovely :blush: XUEMEIs.Now I am programming
 ![image](Qsanguosha-v2/image/generals/card/wangcan.jpg)
 ![image](card-progress/yangwenqi.jpg)
 ![image](Qsanguosha-v2/image/generals/card/xiaosa.jpg)
-![image](card-progress/lishuyu.jpg)
+![image](Qsanguosha-v2/image/generals/card/lishuyu.jpg)
 ![image](Qsanguosha-v2/image/generals/card/EXliyunpeng.jpg)
 ![image](Qsanguosha-v2/image/generals/card/EXhuaibeibei.jpg)
 ![image](Qsanguosha-v2/image/generals/card/EXhanjing.jpg)

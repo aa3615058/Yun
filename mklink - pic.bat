@@ -34,3 +34,5 @@ mklink /H /J %yun_d% %pic_s%
 set pic_s=%pic_dir%skin\card
 set yun_d=%yun_dir%Qsanguosha-v2\image\heroskin\generals\card
 mklink /H /J %yun_d% %pic_s%
+
+pause
