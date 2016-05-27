@@ -410,12 +410,12 @@ luaxiaohancompulsory = sgs.CreateTriggerSkill{
 				if source:isAlive() then
 					room:notifySkillInvoked(source, self:objectName())
 					local msg = sgs.LogMessage()
-					msg.type = "#InvokeSkill"
+					--msg.type = "#InvokeSkill"
 					msg.from = source
+					--msg.arg = self:objectName()
+					--room:sendLog(msg)
+					msg.type = "#luaxiaohan-transfer"
 					msg.arg = self:objectName()
-					room:sendLog(msg)
-					msg.type = "##luaxiaohancompulsory"
-					msg.arg = "lightning"
 					room:sendLog(msg)
 					damage.from = source
 				else
@@ -485,7 +485,7 @@ sgs.LoadTranslationTable{
 	["luaxiaohan"] = "潇寒",
 	[":luaxiaohan"] = "你可以将一张普通【杀】当【雷杀】使用；你对一名角色造成雷电伤害时，若该角色有牌，你可以防止此伤害，改为依次弃置其两张牌；<font color=\"blue\"><b>锁定技</b></font>，你是任何【闪电】造成伤害的来源。",
 	["#luaxiaohancompulsory"] = "潇寒",
-	["##luaxiaohancompulsory"] = "%from 成为【%arg】的伤害来源",
+	["#luaxiaohan-transfer"] = "%from 的“%arg”被触发，【<font color=\"yellow\"><b>闪电</b></font>】的伤害来源改为 %from",
 	["luaxiaohan-thunder_slash"] = "潇寒(<font color=yellow><b>雷杀</b></font>)",
 	["luaxiaohan-ice_sword"] = "潇寒(<font color=yellow><b>寒冰剑</b></font>)",
 	["luamiyu"] = "秘雨",
